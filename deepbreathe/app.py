@@ -10,6 +10,8 @@ from kivymd.uix.navigationdrawer import MDNavigationDrawerItem
 from kivymd.uix.navigationdrawer import MDNavigationDrawerDivider
 from kivymd.uix.navigationdrawer import MDNavigationDrawerMenu
 
+from deepbreathe.widgets.custom_appbar import CustomAppBar
+
 from deepbreathe.widgets.custom_button import CustomButton
 from deepbreathe.screens.home_screen import HomeScreen
 from deepbreathe.screens.co2_screen import CO2Screen

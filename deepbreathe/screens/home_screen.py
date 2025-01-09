@@ -4,6 +4,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDTextButton
 
+
 from kivy.lang import Builder
 
 # Explicitly load the .kv file
