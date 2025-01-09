@@ -1,0 +1,13 @@
+# widgets/custombutton.kv
+<CustomButton>:
+    font_size: 18
+    background_normal: ''  # Remove default background
+    background_color: 0.2, 0.6, 0.8, 1  # Light blue background
+    color: 1, 1, 1, 1  # White text
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.4, 0.6, 1  # Darker blue border
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]  # Rounded corners
