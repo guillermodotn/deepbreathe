@@ -1,9 +1,25 @@
+#:kivy 2.3.1
 MDNavigationLayout:
     MDScreenManager:
+        id: screen_manager
         HomeScreen:
             name: "home"
+        O2Screen:
+            name: "o2_screen"
+        CO2Screen:
+            name: "co2_screen"
 
     MDNavigationDrawer:
         id: nav_drawer
-        MDNavigationDrawerLabel:
-            text: "Screen one"
+        anchor: "left"
+        MDNavigationDrawerMenu:
+            MDNavigationDrawerItem:
+                text: "Home"
+                on_release: app.change_screen("home")
+            MDNavigationDrawerDivider:
+            MDNavigationDrawerItem:
+                text: "O2"
+                on_release: app.change_screen("o2_screen")
+            MDNavigationDrawerItem:
+                text: "CO2"
+                on_release: app.change_screen("co2_screen")
