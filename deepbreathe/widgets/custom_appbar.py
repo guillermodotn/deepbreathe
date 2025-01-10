@@ -1,14 +1,21 @@
 
-from kivymd.uix.toolbar import MDTopAppBar
+from kivymd.uix.appbar import MDTopAppBar
 from kivy.lang import Builder
+
+from kivymd.uix.appbar import MDTopAppBarLeadingButtonContainer, MDActionTopAppBarButton
 
 # Explicitly load the .kv string
 Builder.load_string("""
 <CustomAppBar>:
-    type: "top"
-    title: "DeepBreathe"
-    left_action_items: [["menu", lambda x:  app.root.ids.nav_drawer.set_state("toggle")]]
-    right_action_items: [["git"]]
+    type: "small"
+    MDTopAppBarLeadingButtonContainer:
+
+        MDActionTopAppBarButton:
+            icon: "menu"
+            on_release: app.root.ids.nav_drawer.set_state("toggle")
+        
+    MDTopAppBarTitle:
+        text: "DeepBreathe"
     
 """)
 
