@@ -1,9 +1,9 @@
 
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.button import MDButton
 from kivy.lang import Builder
 
 # Explicitly load the .kv file
 Builder.load_file('deepbreathe/widgets/custombutton.kv')
 
-class CustomButton(MDFlatButton):
+class CustomButton(MDButton):
     pass
