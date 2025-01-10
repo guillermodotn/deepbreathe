@@ -17,12 +17,58 @@ BoxLayout:
             anchor: "left"
             MDNavigationDrawerMenu:
                 MDNavigationDrawerItem:
-                    text: "Home"
                     on_release: app.change_screen("home")
+                    MDNavigationDrawerItemLeadingIcon:
+                        icon: "home"
+
+                    MDNavigationDrawerItemText:
+                        text: "Inbox"
+
+                    MDNavigationDrawerItemTrailingText:
+                        text: "24"
                 MDNavigationDrawerDivider:
                 MDNavigationDrawerItem:
-                    text: "O2"
                     on_release: app.change_screen("o2_screen")
+                    MDNavigationDrawerItemLeadingIcon:
+                        icon: "o2"
+
+                    MDNavigationDrawerItemText:
+                        text: "O2"
+
+                    MDNavigationDrawerItemTrailingText:
+                        text: "24"
+                
                 MDNavigationDrawerItem:
-                    text: "CO2"
                     on_release: app.change_screen("co2_screen")
+                    MDNavigationDrawerItemLeadingIcon:
+                        icon: "co2"
+
+                    MDNavigationDrawerItemText:
+                        text: "CO2"
+
+                    MDNavigationDrawerItemTrailingText:
+                        text: "24"
+                
+                MDNavigationDrawerDivider:
+                MDNavigationDrawerItem:
+                    on_release: app.change_screen("settings_screen")
+                    MDNavigationDrawerItemLeadingIcon:
+                        icon: "settings"
+
+                    MDNavigationDrawerItemText:
+                        text: "Settings"
+
+                    MDNavigationDrawerItemTrailingText:
+                        text: "24"
+                    
+                MDNavigationDrawerItem:
+                    on_release: app.change_screen("about_screen")
+                    MDNavigationDrawerItemLeadingIcon:
+                        icon: "about"
+
+                    MDNavigationDrawerItemText:
+                        text: "About"
+
+                    MDNavigationDrawerItemTrailingText:
+                        text: "24"
+                   
