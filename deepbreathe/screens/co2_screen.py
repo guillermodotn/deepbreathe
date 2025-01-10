@@ -2,7 +2,6 @@ from kivymd.uix.screen import MDScreen
 
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDTextButton
 
 from kivy.lang import Builder
 
@@ -15,6 +14,7 @@ Builder.load_string("""
         MDLabel:
             text: "Co2 Screen"
             halign: "center"
+            text_color: "white"
 """)
 
 class CO2Screen(MDScreen):
