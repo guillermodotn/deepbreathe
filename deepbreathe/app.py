@@ -1,5 +1,6 @@
 import kivy
-kivy.require('2.3.1') # replace with your current kivy version !
+
+kivy.require("2.3.1")  # replace with your current kivy version !
 
 from kivymd.app import MDApp
 
@@ -19,14 +20,13 @@ from deepbreathe.screens.o2_screen import O2Screen
 from deepbreathe.screens.settings_screen import SettingsScreen
 from deepbreathe.screens.about_screen import AboutScreen
 
-class DeepBreathe(MDApp):
 
+class DeepBreathe(MDApp):
     def build(self):
         pass
-    
+
     def change_screen(self, screen_name):
         # Switch to the screen passed as the argument
         self.root.ids.screen_manager.current = screen_name
         # Close the navigation drawer when a menu item is clicked
         self.root.ids.nav_drawer.set_state("close")
-

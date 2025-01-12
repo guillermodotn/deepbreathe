@@ -17,5 +17,6 @@ Builder.load_string("""
             text_color: "white"
 """)
 
+
 class O2Screen(MDScreen):
     pass

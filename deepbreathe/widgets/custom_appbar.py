@@ -1,4 +1,3 @@
-
 from kivymd.uix.appbar import MDTopAppBar
 from kivy.lang import Builder
 
@@ -18,6 +17,7 @@ Builder.load_string("""
         text: "DeepBreathe"
     
 """)
+
 
 class CustomAppBar(MDTopAppBar):
     pass

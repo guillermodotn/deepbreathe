@@ -17,5 +17,6 @@ Builder.load_string("""
             text_color: "white"
 """)
 
+
 class CO2Screen(MDScreen):
     pass
