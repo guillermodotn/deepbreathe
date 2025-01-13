@@ -2,6 +2,7 @@
 BoxLayout:
     orientation: "vertical"
     CustomAppBar:
+        id: appbar
     MDNavigationLayout:
         MDScreenManager:
             id: screen_manager
@@ -16,52 +17,6 @@ BoxLayout:
             AboutScreen:
                 name: "about_screen"
 
-        MDNavigationDrawer:
+        CustomNavDrawer:
             id: nav_drawer
             anchor: "left"
-            MDNavigationDrawerMenu:
-                MDNavigationDrawerItem:
-                    on_release: app.change_screen("home")
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "home"
-
-                    MDNavigationDrawerItemText:
-                        text: "Home"
-
-                MDNavigationDrawerDivider:
-                MDNavigationDrawerItem:
-                    on_release: app.change_screen("o2_screen")
-                    MDNavigationDrawerItemText:
-                        text: "O2"
-
-                    MDNavigationDrawerItemTrailingText:
-                        text: "streak 24"
-                
-                MDNavigationDrawerItem:
-                    on_release: app.change_screen("co2_screen")
-                    MDNavigationDrawerItemText:
-                        text: "CO2"
-
-                    MDNavigationDrawerItemTrailingText:
-                        text: "streak 13"
-                
-                MDNavigationDrawerDivider:
-                MDNavigationDrawerItem:
-                    on_release: app.change_screen("settings_screen")
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "cog"
-
-                    MDNavigationDrawerItemText:
-                        text: "Settings"
-                    
-                MDNavigationDrawerItem:
-                    on_release: app.change_screen("about_screen")
-                    MDNavigationDrawerItemLeadingIcon:
-                        icon: "information"
-
-                    MDNavigationDrawerItemText:
-                        text: "About"
-
-                    MDNavigationDrawerItemTrailingText:
-                        text: "1.0.0"
-                   

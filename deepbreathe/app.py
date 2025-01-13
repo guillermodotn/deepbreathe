@@ -11,6 +11,7 @@ from kivymd.uix.navigationdrawer import MDNavigationDrawerItem
 from kivymd.uix.navigationdrawer import MDNavigationDrawerDivider
 from kivymd.uix.navigationdrawer import MDNavigationDrawerMenu
 
+from deepbreathe.widgets.custom_navdrawer import CustomNavDrawer
 from deepbreathe.widgets.custom_appbar import CustomAppBar
 
 from deepbreathe.widgets.custom_button import CustomButton
@@ -24,8 +25,10 @@ from deepbreathe.screens.about_screen import AboutScreen
 class DeepBreathe(MDApp):
     def build(self):
         pass
-
-    def change_screen(self, screen_name):
+    
+    def change_screen(self, screen_name, title):
+        
+        self.root.ids.appbar.ids.title.text = title
         # Switch to the screen passed as the argument
         self.root.ids.screen_manager.current = screen_name
         # Close the navigation drawer when a menu item is clicked
