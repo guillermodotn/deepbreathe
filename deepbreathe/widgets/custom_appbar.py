@@ -14,6 +14,7 @@ Builder.load_string("""
             on_release: app.root.ids.nav_drawer.set_state("toggle")
         
     MDTopAppBarTitle:
+        id: title
         text: "DeepBreathe"
     
 """)
