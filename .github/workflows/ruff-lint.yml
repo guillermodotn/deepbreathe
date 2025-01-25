@@ -34,4 +34,10 @@ jobs:
     # Step 4: Run Ruff
     - name: Run Ruff Lint
       run: |
-        ruff check .
+        ruff check . -o ruff-report.txt
+
+    - name: Upload Ruff Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: ruff-report
+        path: ruff-report.txt
