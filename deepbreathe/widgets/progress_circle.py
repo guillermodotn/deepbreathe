@@ -1,8 +1,9 @@
-from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.properties import NumericProperty
 from kivy.animation import Animation
+from kivy.app import App
 from kivy.graphics import Color, Line
+from kivy.properties import NumericProperty
+from kivy.uix.widget import Widget
+
 
 class ProgressCircle(Widget):
     progress = NumericProperty(0)  # Progress percentage (0 to 100)

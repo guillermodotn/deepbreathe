@@ -3,23 +3,23 @@ import kivy
 kivy.require("2.3.1")  # replace with your current kivy version !
 
 from kivymd.app import MDApp
-
-from kivymd.uix.navigationdrawer import MDNavigationLayout
+from kivymd.uix.navigationdrawer import (
+    MDNavigationDrawer,
+    MDNavigationDrawerDivider,
+    MDNavigationDrawerItem,
+    MDNavigationDrawerMenu,
+    MDNavigationLayout,
+)
 from kivymd.uix.screenmanager import MDScreenManager
-from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivymd.uix.navigationdrawer import MDNavigationDrawerItem
-from kivymd.uix.navigationdrawer import MDNavigationDrawerDivider
-from kivymd.uix.navigationdrawer import MDNavigationDrawerMenu
 
-from deepbreathe.widgets.custom_navdrawer import CustomNavDrawer
-from deepbreathe.widgets.custom_appbar import CustomAppBar
-
-from deepbreathe.widgets.custom_button import CustomButton
-from deepbreathe.screens.home_screen import HomeScreen
+from deepbreathe.screens.about_screen import AboutScreen
 from deepbreathe.screens.co2_screen import CO2Screen
+from deepbreathe.screens.home_screen import HomeScreen
 from deepbreathe.screens.o2_screen import O2Screen
 from deepbreathe.screens.settings_screen import SettingsScreen
-from deepbreathe.screens.about_screen import AboutScreen
+from deepbreathe.widgets.custom_appbar import CustomAppBar
+from deepbreathe.widgets.custom_button import CustomButton
+from deepbreathe.widgets.custom_navdrawer import CustomNavDrawer
 
 
 class DeepBreathe(MDApp):

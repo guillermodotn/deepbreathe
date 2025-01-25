@@ -1,11 +1,10 @@
-from kivymd.uix.screen import MDScreen
+from kivy.lang import Builder
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonText
 from kivymd.uix.label import MDLabel
+from kivymd.uix.screen import MDScreen
 
 from deepbreathe.widgets.progress_circle import ProgressCircle
-
-from kivy.lang import Builder
 
 # Explicitly load the .kv string
 # Builder.load_string("""

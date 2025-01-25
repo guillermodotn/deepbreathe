@@ -1,9 +1,7 @@
-from kivymd.uix.screen import MDScreen
-
+from kivy.lang import Builder
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-
-from kivy.lang import Builder
+from kivymd.uix.screen import MDScreen
 
 # Explicitly load the .kv string
 Builder.load_string("""

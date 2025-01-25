@@ -1,5 +1,5 @@
-from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.lang import Builder
+from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
 Builder.load_string("""
 <CustomNavDrawer>:
