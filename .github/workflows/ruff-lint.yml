@@ -35,12 +35,4 @@ jobs:
     - name: Run Ruff Lint
       id: ruff-linter
       run: |
-        ruff check . -o ruff-report.txt
-      continue-on-error: true
-
-    - name: Upload Ruff Report
-      if: steps.ruff-linter.outcome == 'failure'
-      uses: actions/upload-artifact@v3
-      with:
-        name: ruff-report
-        path: ruff-report.txt
+        ruff check .
