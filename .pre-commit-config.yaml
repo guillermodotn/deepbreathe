@@ -8,3 +8,8 @@ repos:
     rev: v0.9.3
     hooks:
       - id: ruff
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.24.2
+    hooks:
+      - id: toml-sort-fix
+        files: .*\.toml$
