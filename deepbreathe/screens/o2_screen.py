@@ -33,7 +33,7 @@ class O2Screen(MDScreen):
         root_layout.add_widget(button)
         self.add_widget(root_layout)
         # return root
-    
+
     def update_progress(self, *args):
         from random import randint
         # Randomly set a new progress value

@@ -20,7 +20,7 @@ Builder.load_string("""
 
             MDNavigationDrawerItemTrailingText:
                 text: "streak 24"
-        
+
         MDNavigationDrawerItem:
             on_release: app.change_screen("co2_screen", "CO2 Tables")
             MDNavigationDrawerItemText:
@@ -28,7 +28,7 @@ Builder.load_string("""
 
             MDNavigationDrawerItemTrailingText:
                 text: "streak 13"
-        
+
         MDNavigationDrawerDivider:
         MDNavigationDrawerItem:
             on_release: app.change_screen("settings_screen", "Settings")
@@ -37,7 +37,7 @@ Builder.load_string("""
 
             MDNavigationDrawerItemText:
                 text: "Settings"
-            
+
         MDNavigationDrawerItem:
             on_release: app.change_screen("about_screen", "About")
             MDNavigationDrawerItemLeadingIcon:
@@ -52,4 +52,3 @@ Builder.load_string("""
 
 class CustomNavDrawer(MDNavigationDrawer):
     pass
-    

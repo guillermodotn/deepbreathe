@@ -25,7 +25,7 @@ from deepbreathe.widgets.custom_navdrawer import CustomNavDrawer
 class DeepBreathe(MDApp):
     def build(self):
         pass
-    
+
     def change_screen(self, screen_name, title, color = (1, 0, 1, 1)):
         self.root.ids.appbar.md_bg_color = color
         # Change title of the appbar

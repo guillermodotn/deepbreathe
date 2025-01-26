@@ -30,7 +30,7 @@ class ProgressCircle(Widget):
         # Redraw the canvas when the widget size changes
         self.update_canvas()
 
-    
+
     def set_progress(self, value, duration=0.5):
         """Smoothly animate progress to the desired value."""
         Animation(progress=value, duration=duration, t='out_quad').start(self)

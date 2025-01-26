@@ -14,11 +14,11 @@ Builder.load_string("""
         MDActionTopAppBarButton:
             icon: "menu"
             on_release: app.root.ids.nav_drawer.set_state("toggle")
-        
+
     MDTopAppBarTitle:
         id: title
         text: "DeepBreathe"
-    
+
 """)
 
 
