@@ -1,5 +1,6 @@
 from kivy.animation import Animation
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.graphics import Color, Line
 from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
@@ -11,6 +12,8 @@ class ProgressCircle(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.bind(progress=self.update_canvas)
+        # Force a layout update to ensure the widget's position and size are calculated
+        self.bind(pos=self.update_canvas, size=self.update_canvas)
 
     def update_canvas(self, *args):
         # Clear the canvas before redrawing
@@ -23,8 +26,9 @@ class ProgressCircle(Widget):
             Line(circle=(self.center_x, self.center_y, min(self.width, self.height) / 2 - 10), width=3)
 
             # Progress arc
-            Color(0.1, 0.5, 1, 1)  # Material blue
-            Line(circle=(self.center_x, self.center_y, min(self.width, self.height) / 2 - 10, 0, 360 * self.progress / 100), width=6, cap='round')
+            if self.progress != 0:
+                Color(0.1, 0.5, 1, 1)  # Material blue
+                Line(circle=(self.center_x, self.center_y, min(self.width, self.height) / 2 - 10, 0, 360 * self.progress / 100), width=6, cap='round')
 
     def on_size(self, *args):
         # Redraw the canvas when the widget size changes
