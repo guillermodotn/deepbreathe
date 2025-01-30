@@ -1,3 +1,8 @@
+[lint.isort]
+combine-as-imports = true
+known-third-party = ["kivy", "kivymd"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
 [tool.ruff]
 target-version = "py312"
 # Exclude certain auto-generated or external files
@@ -6,11 +11,15 @@ exclude = [
   "build",
   "dist"
 ]
+output-format = "grouped"
 # Linting rules
 lint.select = [
   "E", # Pycodestyle errors
   "F", # Pyflakes (detects errors)
-  "I" # Isort (sorts imports)
+  "I", # Isort (sorts imports)
+  "W", # Warnings
+  "UP", # Pyupgrade (suggest Python upgrades)
+  "N" # Naming conventions
 ]
 lint.ignore = [
   "E501" # Ignore line length
