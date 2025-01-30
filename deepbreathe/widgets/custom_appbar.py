@@ -1,12 +1,12 @@
 from kivy.lang import Builder
-from kivymd.uix.appbar import (
-    MDActionTopAppBarButton,
-    MDTopAppBar,
-    MDTopAppBarLeadingButtonContainer,
-)
+from kivymd.uix.appbar import MDTopAppBar
 
 # Explicitly load the .kv string
 Builder.load_string("""
+#:import MDActionTopAppBarButton kivymd.uix.topappbar.MDActionTopAppBarButton
+#:import MDTopAppBarLeadingButtonContainer kivymd.uix.topappbar.MDTopAppBarLeadingButtonContainer
+
+
 <CustomAppBar>:
     type: "small"
     MDTopAppBarLeadingButtonContainer:

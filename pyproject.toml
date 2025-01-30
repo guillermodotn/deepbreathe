@@ -1,7 +1,17 @@
 [tool.ruff]
 target-version = "py312"
-lint.select = [
-  "F", # Pyflakes
-  "I" # Isort
+# Exclude certain auto-generated or external files
+exclude = [
+  ".venv",
+  "build",
+  "dist"
 ]
-lint.ignore = ["F401"]
+# Linting rules
+lint.select = [
+  "E", # Pycodestyle errors
+  "F", # Pyflakes (detects errors)
+  "I" # Isort (sorts imports)
+]
+lint.ignore = [
+  "E501" # Ignore line length
+]

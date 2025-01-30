@@ -1,10 +1,11 @@
 from kivy.lang import Builder
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
 
 # Explicitly load the .kv string
 Builder.load_string("""
+#:import MDBoxLayout kivymd.uix.boxlayout.MDBoxLayout
+#:import MDLabel kivymd.uix.label.MDLabel
+
 <AboutScreen>:
     MDBoxLayout:
         orientation: "vertical"
