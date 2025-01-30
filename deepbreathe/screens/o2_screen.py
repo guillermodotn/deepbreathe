@@ -3,10 +3,10 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivymd.uix.screen import MDScreen
 
-from deepbreathe.widgets.progress_circle import ProgressCircle  # noqa: F401
-
 # Explicitly load the .kv string
 Builder.load_string("""
+#: import ProgressCircle deepbreathe.widgets.progress_circle.ProgressCircle
+
 <O2Screen>:
     MDBoxLayout:
         id: root_layout
