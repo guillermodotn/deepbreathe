@@ -3,8 +3,8 @@ from kivymd.uix.appbar import MDTopAppBar
 
 # Explicitly load the .kv string
 Builder.load_string("""
-#:import MDActionTopAppBarButton kivymd.uix.topappbar.MDActionTopAppBarButton
-#:import MDTopAppBarLeadingButtonContainer kivymd.uix.topappbar.MDTopAppBarLeadingButtonContainer
+#:import MDActionTopAppBarButton kivymd.uix.appbar.appbar
+#:import MDTopAppBarLeadingButtonContainer kivymd.uix.appbar.appbar
 
 
 <CustomAppBar>:
