@@ -1,41 +1,54 @@
 #:kivy 2.3.1
 
-#:import MDNavigationDrawer kivymd.uix.navigationdrawer.MDNavigationDrawer
-#:import MDNavigationDrawerDivider kivymd.uix.navigationdrawer.MDNavigationDrawerDivider
-#:import MDNavigationDrawerItem kivymd.uix.navigationdrawer.MDNavigationDrawerItem
-#:import MDNavigationDrawerMenu kivymd.uix.navigationdrawer.MDNavigationDrawerMenu
-#:import MDNavigationLayout kivymd.uix.navigationdrawer.MDNavigationLayout
+#:import AppBar deepbreathe.widgets.app_bar.AppBar
+#:import NavDrawerContainer deepbreathe.widgets.nav_drawer.NavDrawerContainer
 
-#:import MDScreenManager kivymd.uix.screenmanager
-
-#:import AboutScreen deepbreathe.screens.about_screen
-#:import CO2Screen deepbreathe.screens.co2_screen
-#:import HomeScreen deepbreathe.screens.home_screen
-#:import O2Screen deepbreathe.screens.o2_screen
-#:import SettingsScreen deepbreathe.screens.settings_screen
-#:import CustomAppBar deepbreathe.widgets.custom_appbar
-#:import CustomButton deepbreathe.widgets.custom_button
-#:import CustomNavDrawer deepbreathe.widgets.custom_navdrawer
+#:import AboutScreen deepbreathe.screens.about_screen.AboutScreen
+#:import CO2Screen deepbreathe.screens.co2_screen.CO2Screen
+#:import FreeScreen deepbreathe.screens.free_screen.FreeScreen
+#:import HomeScreen deepbreathe.screens.home_screen.HomeScreen
+#:import O2Screen deepbreathe.screens.o2_screen.O2Screen
+#:import SettingsScreen deepbreathe.screens.settings_screen.SettingsScreen
 
 
-BoxLayout:
-    orientation: "vertical"
-    CustomAppBar:
-        id: appbar
-    MDNavigationLayout:
-        MDScreenManager:
+FloatLayout:
+    canvas.before:
+        Color:
+            rgba: 0.98, 0.98, 0.98, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        pos: root.pos
+        size: root.size
+
+        AppBar:
+            id: appbar
+
+        ScreenManager:
             id: screen_manager
+
             HomeScreen:
                 name: "home"
+
             O2Screen:
                 name: "o2_screen"
+
             CO2Screen:
                 name: "co2_screen"
+
+            FreeScreen:
+                name: "free_screen"
+
             SettingsScreen:
                 name: "settings_screen"
+
             AboutScreen:
                 name: "about_screen"
 
-        CustomNavDrawer:
-            id: nav_drawer
-            anchor: "left"
+    NavDrawerContainer:
+        id: nav_drawer
+        pos: root.pos
+        size: root.size
