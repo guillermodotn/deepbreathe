@@ -31,17 +31,16 @@ Builder.load_string("""
             size_hint_y: None
             height: dp(44)
 
-        FloatLayout:
+        RelativeLayout:
             size_hint_y: 1
 
             ProgressCircle:
                 id: progress_circle
                 size_hint: None, None
-                size: self.parent.width * 0.7, self.parent.width * 0.7
-                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                size: min(self.parent.width, self.parent.height) * 0.7, min(self.parent.width, self.parent.height) * 0.7
+                pos: (self.parent.width - self.width) / 2, (self.parent.height - self.height) / 2
                 progress_color: root.phase_color
 
-            # Timer display
             Label:
                 text: root.time_text
                 font_size: sp(56)
@@ -49,7 +48,7 @@ Builder.load_string("""
                 color: 0.1, 0.1, 0.1, 1
                 size_hint: None, None
                 size: dp(200), dp(80)
-                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                pos: (self.parent.width - self.width) / 2, (self.parent.height - self.height) / 2
 
         # Instruction text
         Label:
@@ -78,7 +77,7 @@ Builder.load_string("""
                 text: "Pause" if root.is_running else "Start"
                 size_hint_x: 0.5
                 on_release: root.toggle_pause()
-""")
+""")  # noqa E501
 
 
 class O2Screen(Screen):

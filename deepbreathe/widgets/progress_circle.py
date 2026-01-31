@@ -1,4 +1,5 @@
 from kivy.animation import Animation
+from kivy.clock import Clock
 from kivy.graphics import Color, Line
 from kivy.properties import ListProperty, NumericProperty
 from kivy.uix.widget import Widget
@@ -17,12 +18,24 @@ class ProgressCircle(Widget):
         self.bind(progress=self.update_canvas)
         self.bind(progress_color=self.update_canvas)
         self.bind(pos=self.update_canvas, size=self.update_canvas)
+        # Schedule initial draw after layout is complete
+        Clock.schedule_once(self._initial_draw, 0)
+
+    def _initial_draw(self, dt):
+        """Draw after the first frame when layout is ready."""
+        self.update_canvas()
 
     def update_canvas(self, *args):
         """Redraw the progress circle."""
+        # Skip if size is not yet determined
+        if self.width <= 1 or self.height <= 1:
+            return
+
         self.canvas.clear()
 
         radius = min(self.width, self.height) / 2 - self.line_width - 5
+        if radius <= 0:
+            return
 
         with self.canvas:
             # Background circle
