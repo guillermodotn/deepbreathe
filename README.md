@@ -1,5 +1,9 @@
 # DeepBreathe
 
+<p align="center">
+  <img src="deepbreathe/assets/images/logo.svg" alt="DeepBreathe Logo" width="200">
+</p>
+
 A cross-platform apnea and breath-holding training app built with Python and Kivy.
 
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
