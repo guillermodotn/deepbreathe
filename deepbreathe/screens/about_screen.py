@@ -16,13 +16,10 @@ Builder.load_string("""
             size_hint_y: None
             height: self.minimum_height
 
-            Label:
-                text: root.icon_lungs
-                font_name: "Icons"
-                font_size: sp(64)
-                color: 0.2, 0.5, 0.9, 1
+            Image:
+                source: "deepbreathe/assets/images/logo.png"
                 size_hint_y: None
-                height: dp(80)
+                height: dp(120)
 
             Label:
                 text: "DeepBreathe"
@@ -33,7 +30,7 @@ Builder.load_string("""
                 height: dp(40)
 
             Label:
-                text: "Version 1.0.0"
+                text: "Version 0.1.0"
                 font_size: sp(14)
                 color: 0.5, 0.5, 0.5, 1
                 size_hint_y: None
@@ -165,7 +162,6 @@ Builder.load_string("""
 
 
 class AboutScreen(Screen):
-    icon_lungs = StringProperty(icon("lungs"))
     icon_alert = StringProperty(icon("alert"))
     safety_text = StringProperty(
         "• Never practice in water alone\n"
