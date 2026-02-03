@@ -6,7 +6,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 
-from deepbreathe.utils.icons import icon
+from apno.utils.icons import icon
 
 
 class MenuButton(ButtonBehavior, Label):
@@ -57,7 +57,7 @@ Builder.load_string("""
 class AppBar(BoxLayout):
     """A top app bar with menu button and title."""
 
-    title = StringProperty("DeepBreathe")
+    title = StringProperty("Apno")
     bg_color = ColorProperty([0.2, 0.5, 0.9, 1])
     text_color = ColorProperty([1, 1, 1, 1])
 

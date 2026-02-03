@@ -2,10 +2,10 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen
 
-from deepbreathe.utils.icons import icon
+from apno.utils.icons import icon
 
 Builder.load_string("""
-#:import ClickableCard deepbreathe.widgets.styled_card.ClickableCard
+#:import ClickableCard apno.widgets.styled_card.ClickableCard
 
 <TrainingCard@ClickableCard>:
     orientation: "horizontal"

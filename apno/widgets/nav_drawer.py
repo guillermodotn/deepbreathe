@@ -11,7 +11,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
-from deepbreathe.utils.icons import icon
+from apno.utils.icons import icon
 
 Builder.load_string("""
 <NavDrawerItem>:
@@ -45,7 +45,7 @@ Builder.load_string("""
     spacing: dp(4)
 
     Label:
-        text: "DeepBreathe"
+        text: "Apno"
         font_size: sp(24)
         bold: True
         color: 0.2, 0.5, 0.9, 1
@@ -68,7 +68,7 @@ Builder.load_string("""
     NavDrawerItem:
         icon_name: "home"
         text: "Home"
-        on_release: root.nav_to("home", "DeepBreathe")
+        on_release: root.nav_to("home", "Apno")
 
     NavDrawerItem:
         icon_name: "lungs"

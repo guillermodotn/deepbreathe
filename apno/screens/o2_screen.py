@@ -4,9 +4,9 @@ from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
 Builder.load_string("""
-#:import ProgressCircle deepbreathe.widgets.progress_circle.ProgressCircle
-#:import StyledButton deepbreathe.widgets.styled_button.StyledButton
-#:import OutlinedButton deepbreathe.widgets.styled_button.OutlinedButton
+#:import ProgressCircle apno.widgets.progress_circle.ProgressCircle
+#:import StyledButton apno.widgets.styled_button.StyledButton
+#:import OutlinedButton apno.widgets.styled_button.OutlinedButton
 
 <O2Screen>:
     BoxLayout:

@@ -4,8 +4,8 @@ from kivy.properties import NumericProperty
 from kivy.uix.screenmanager import Screen
 
 Builder.load_string("""
-#:import StyledCard deepbreathe.widgets.styled_card.StyledCard
-#:import StyledButton deepbreathe.widgets.styled_button.StyledButton
+#:import StyledCard apno.widgets.styled_card.StyledCard
+#:import StyledButton apno.widgets.styled_button.StyledButton
 
 <SettingRow@BoxLayout>:
     orientation: "horizontal"
@@ -301,4 +301,4 @@ class SettingsScreen(Screen):
         co2_screen.total_rounds = self.total_rounds
 
         # Navigate back to home
-        app.change_screen("home", "DeepBreathe")
+        app.change_screen("home", "Apno")

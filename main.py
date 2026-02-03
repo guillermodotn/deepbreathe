@@ -1,5 +1,5 @@
 # main.py
-from deepbreathe.app import DeepBreathe
+from apno.app import Apno
 
 if __name__ == "__main__":
-    DeepBreathe().run()
+    Apno().run()

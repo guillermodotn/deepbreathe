@@ -4,7 +4,7 @@ from kivy.properties import ColorProperty, NumericProperty, StringProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.label import Label
 
-from deepbreathe.utils.icons import icon
+from apno.utils.icons import icon
 
 Builder.load_string("""
 <StyledButton>:

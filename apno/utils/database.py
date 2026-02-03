@@ -10,14 +10,14 @@ from kivy.utils import platform
 def get_data_dir() -> Path:
     """Get the platform-appropriate data directory.
 
-    In development mode (DEEPBREATHE_DEV=1), uses the project directory.
+    In development mode (APNO_DEV=1), uses the project directory.
     Otherwise uses the platform-appropriate location:
-    - Linux/Desktop: ~/.local/share/deepbreathe (or XDG_DATA_HOME)
+    - Linux/Desktop: ~/.local/share/apno (or XDG_DATA_HOME)
     - Android: app storage path
     - iOS: documents directory
     """
     # Development mode: use project directory
-    if os.environ.get("DEEPBREATHE_DEV"):
+    if os.environ.get("APNO_DEV"):
         return Path(__file__).parent.parent.parent
 
     if platform == "android":
@@ -34,16 +34,16 @@ def get_data_dir() -> Path:
         # Desktop: use XDG data home or fallback
         xdg_data = os.environ.get("XDG_DATA_HOME")
         if xdg_data:
-            data_dir = Path(xdg_data) / "deepbreathe"
+            data_dir = Path(xdg_data) / "apno"
         else:
-            data_dir = Path.home() / ".local" / "share" / "deepbreathe"
+            data_dir = Path.home() / ".local" / "share" / "apno"
         data_dir.mkdir(parents=True, exist_ok=True)
         return data_dir
 
 
 def get_db_path() -> Path:
     """Get the path to the SQLite database file."""
-    return get_data_dir() / "deepbreathe.db"
+    return get_data_dir() / "apno.db"
 
 
 def get_connection() -> sqlite3.Connection:

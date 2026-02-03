@@ -2,10 +2,10 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import Screen
 
-from deepbreathe.utils.icons import icon
+from apno.utils.icons import icon
 
 Builder.load_string("""
-#:import StyledCard deepbreathe.widgets.styled_card.StyledCard
+#:import StyledCard apno.widgets.styled_card.StyledCard
 
 <AboutScreen>:
     ScrollView:
@@ -17,12 +17,12 @@ Builder.load_string("""
             height: self.minimum_height
 
             Image:
-                source: "deepbreathe/assets/images/logo.png"
+                source: "apno/assets/images/logo.png"
                 size_hint_y: None
                 height: dp(120)
 
             Label:
-                text: "DeepBreathe"
+                text: "Apno"
                 font_size: sp(28)
                 bold: True
                 color: 0.2, 0.5, 0.9, 1

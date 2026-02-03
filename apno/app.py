@@ -18,7 +18,7 @@ LabelBase.register(
 )
 
 
-class DeepBreathe(App):
+class Apno(App):
     def build(self):
         # Set window background color
         Window.clearcolor = (0.98, 0.98, 0.98, 1)
@@ -36,4 +36,4 @@ class DeepBreathe(App):
 
 def main():
     """Entry point for the application."""
-    DeepBreathe().run()
+    Apno().run()

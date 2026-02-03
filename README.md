@@ -1,7 +1,7 @@
-# DeepBreathe
+# Apno
 
 <p align="center">
-  <img src="deepbreathe/assets/images/logo.svg" alt="DeepBreathe Logo" width="200">
+  <img src="apno/assets/images/logo.svg" alt="Apno Logo" width="200">
 </p>
 
 A cross-platform apnea and breath-holding training app built with Python and Kivy.
@@ -34,13 +34,13 @@ uv run pre-commit install
 Development mode stores the database in the project directory instead of the system data directory:
 
 ```bash
-uv run --env-file .env.development deepbreathe
+uv run --env-file .env.development apno
 ```
 
 Or set the environment variable manually:
 
 ```bash
-DEEPBREATHE_DEV=1 uv run deepbreathe
+APNO_DEV=1 uv run apno
 ```
 
 ### Code quality

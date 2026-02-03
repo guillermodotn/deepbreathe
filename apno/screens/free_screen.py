@@ -3,12 +3,12 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
-from deepbreathe.utils.database import get_best_score, save_score
+from apno.utils.database import get_best_score, save_score
 
 Builder.load_string("""
-#:import ProgressCircle deepbreathe.widgets.progress_circle.ProgressCircle
-#:import StyledButton deepbreathe.widgets.styled_button.StyledButton
-#:import OutlinedButton deepbreathe.widgets.styled_button.OutlinedButton
+#:import ProgressCircle apno.widgets.progress_circle.ProgressCircle
+#:import StyledButton apno.widgets.styled_button.StyledButton
+#:import OutlinedButton apno.widgets.styled_button.OutlinedButton
 
 <FreeScreen>:
     BoxLayout:

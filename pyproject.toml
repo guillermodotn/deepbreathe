@@ -1,5 +1,9 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "deepbreathe"
+name = "apno"
 version = "0.1.0"
 description = "Apnea training app."
 authors = [
@@ -9,43 +13,39 @@ license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-  "kivy[base]>=2.3.1",
+  "kivy[base]>=2.3.1"
 ]
 
 [project.optional-dependencies]
 dev = [
   "pre-commit>=4.1.0",
-  "ruff>=0.9.1",
+  "ruff>=0.9.1"
 ]
 
 [project.scripts]
-deepbreathe = "deepbreathe.app:main"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+apno = "apno.app:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["deepbreathe"]
+packages = ["apno"]
 
 [tool.ruff]
 target-version = "py312"
 exclude = [
   ".venv",
   "build",
-  "dist",
+  "dist"
 ]
 output-format = "grouped"
 line-length = 88
 
 [tool.ruff.lint]
 select = [
-  "E",  # Pycodestyle errors
-  "F",  # Pyflakes (detects errors)
-  "I",  # Isort (sorts imports)
-  "W",  # Warnings
+  "E", # Pycodestyle errors
+  "F", # Pyflakes (detects errors)
+  "I", # Isort (sorts imports)
+  "W", # Warnings
   "UP", # Pyupgrade (suggest Python upgrades)
-  "N",  # Naming conventions
+  "N" # Naming conventions
 ]
 
 [tool.ruff.lint.isort]
