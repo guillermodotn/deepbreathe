@@ -17,3 +17,39 @@ A cross-platform apnea and breath-holding training app built with Python and Kiv
 - **Customizable Settings** - Adjust hold times, rest periods, and number of rounds
 - **Visual Progress** - Animated progress circle with phase-based color feedback
 
+## Development
+
+### Setup
+
+```bash
+# Install development dependencies
+uv sync --extra dev
+
+# Install pre-commit hooks
+uv run pre-commit install
+```
+
+### Running in Development Mode
+
+Development mode stores the database in the project directory instead of the system data directory:
+
+```bash
+uv run --env-file .env.development deepbreathe
+```
+
+Or set the environment variable manually:
+
+```bash
+DEEPBREATHE_DEV=1 uv run deepbreathe
+```
+
+### Code quality
+
+```bash
+uv run ruff check .
+```
+
+```
+uv run ruff format .
+```
+

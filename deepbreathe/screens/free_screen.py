@@ -3,6 +3,8 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
+from deepbreathe.utils.database import get_best_score, save_score
+
 Builder.load_string("""
 #:import ProgressCircle deepbreathe.widgets.progress_circle.ProgressCircle
 #:import StyledButton deepbreathe.widgets.styled_button.StyledButton
@@ -51,13 +53,24 @@ Builder.load_string("""
                 pos: (self.parent.width - self.width) / 2, (self.parent.height - self.height) / 2
 
         # Best time display
-        Label:
-            text: root.best_time_text
-            font_size: sp(16)
-            bold: True
-            color: 0.3, 0.3, 0.3, 1
+        BoxLayout:
+            orientation: "horizontal"
             size_hint_y: None
             height: dp(24)
+            spacing: dp(24)
+            padding: dp(16), 0
+
+            Label:
+                text: root.best_time_text
+                font_size: sp(16)
+                bold: True
+                color: 0.3, 0.3, 0.3, 1
+
+            Label:
+                text: root.alltime_best_text
+                font_size: sp(16)
+                bold: True
+                color: 0.2, 0.6, 0.4, 1
 
         # Instruction text
         Label:
@@ -95,7 +108,8 @@ class FreeScreen(Screen):
     time_text = StringProperty("00:00")
     phase_text = StringProperty("Ready")
     instruction_text = StringProperty("Tap Start when you're ready to hold")
-    best_time_text = StringProperty("Best: --:--")
+    best_time_text = StringProperty("Session: --:--")
+    alltime_best_text = StringProperty("All-time: --:--")
     button_text = StringProperty("Start Hold")
     phase_color = [0.4, 0.4, 0.8, 1]
 
@@ -103,15 +117,18 @@ class FreeScreen(Screen):
     is_holding = BooleanProperty(False)
     elapsed_time = NumericProperty(0)
     best_time = NumericProperty(0)
+    alltime_best = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.timer_event = None
         self.phase = "ready"  # ready, hold
         self._update_phase_color()
+        self._load_alltime_best()
 
     def on_enter(self):
         """Called when screen is entered."""
+        self._load_alltime_best()
         self._reset_display()
 
     def on_leave(self):
@@ -132,12 +149,22 @@ class FreeScreen(Screen):
             self.ids.progress_circle.set_progress(0, duration=0.3)
 
     def reset_session(self):
-        """Full reset including hold count and best time."""
+        """Full reset including hold count and session best time."""
         self._stop_timer()
         self.hold_count = 0
         self.best_time = 0
-        self.best_time_text = "Best: --:--"
+        self.best_time_text = "Session: --:--"
         self._reset_display()
+
+    def _load_alltime_best(self):
+        """Load the all-time best from the database."""
+        best = get_best_score("free")
+        if best is not None:
+            self.alltime_best = best
+            self._update_alltime_best_display()
+        else:
+            self.alltime_best = 0
+            self.alltime_best_text = "All-time: --:--"
 
     def toggle_hold(self):
         """Start or stop a breath hold."""
@@ -164,11 +191,23 @@ class FreeScreen(Screen):
         self.phase = "ready"
         self.is_holding = False
 
-        # Check for new best time
-        if self.elapsed_time > self.best_time:
+        is_new_session_best = self.elapsed_time > self.best_time
+        is_new_alltime_best = self.elapsed_time > self.alltime_best
+
+        # Check for new session best time
+        if is_new_session_best:
             self.best_time = self.elapsed_time
             self._update_best_time_display()
-            self.phase_text = "New Best!"
+
+        # Check for new all-time best
+        if is_new_alltime_best:
+            self.alltime_best = self.elapsed_time
+            save_score("free", self.elapsed_time)
+            self._update_alltime_best_display()
+            self.phase_text = "New All-Time Best!"
+            self.instruction_text = "Amazing! You've set a new personal record!"
+        elif is_new_session_best:
+            self.phase_text = "New Session Best!"
             self.instruction_text = "Great job! Take recovery breaths"
         else:
             self.phase_text = "Done"
@@ -206,10 +245,16 @@ class FreeScreen(Screen):
             self.time_text = f"{secs:02}.{tenths}"
 
     def _update_best_time_display(self):
-        """Update the best time display."""
+        """Update the session best time display."""
         total_seconds = int(self.best_time)
         mins, secs = divmod(total_seconds, 60)
-        self.best_time_text = f"Best: {mins:02}:{secs:02}"
+        self.best_time_text = f"Session: {mins:02}:{secs:02}"
+
+    def _update_alltime_best_display(self):
+        """Update the all-time best display."""
+        total_seconds = int(self.alltime_best)
+        mins, secs = divmod(total_seconds, 60)
+        self.alltime_best_text = f"All-time: {mins:02}:{secs:02}"
 
     def _update_progress(self):
         """Update progress circle based on elapsed time."""
