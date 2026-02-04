@@ -9,9 +9,9 @@ class ProgressCircle(Widget):
     """A circular progress indicator with smooth animations."""
 
     progress = NumericProperty(0)  # Progress percentage (0 to 100)
-    progress_color = ListProperty([0.2, 0.5, 0.9, 1])  # Default blue
+    progress_color = ListProperty([0.15, 0.40, 0.65, 1])  # Deep Ocean Blue
     line_width = NumericProperty(8)
-    background_color = ListProperty([0.9, 0.9, 0.9, 1])
+    background_color = ListProperty([0.85, 0.90, 0.95, 1])  # Light blue-grey
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
