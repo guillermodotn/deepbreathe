@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
-from apno.utils.database import get_best_score, save_score
+from apno.utils.database import get_best_score, save_practice_session, save_score
 
 Builder.load_string("""
 #:import ProgressCircle apno.widgets.progress_circle.ProgressCircle
@@ -193,6 +193,20 @@ class FreeScreen(Screen):
 
         is_new_session_best = self.elapsed_time > self.best_time
         is_new_alltime_best = self.elapsed_time > self.alltime_best
+
+        # Save the practice session for this hold
+        save_practice_session(
+            training_type="free",
+            duration_seconds=self.elapsed_time,
+            rounds_completed=1,
+            parameters={
+                "hold_number": self.hold_count,
+                "hold_time": self.elapsed_time,
+                "is_session_best": is_new_session_best,
+                "is_alltime_best": is_new_alltime_best,
+            },
+            completed=True,
+        )
 
         # Check for new session best time
         if is_new_session_best:

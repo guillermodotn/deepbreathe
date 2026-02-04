@@ -3,6 +3,8 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
+from apno.utils.database import save_practice_session
+
 Builder.load_string("""
 #:import ProgressCircle apno.widgets.progress_circle.ProgressCircle
 #:import StyledButton apno.widgets.styled_button.StyledButton
@@ -103,6 +105,7 @@ class O2Screen(Screen):
         self.current_phase_duration = 0
         self.phase = "ready"  # ready, breathe, hold, rest, complete
         self.timer_event = None
+        self.session_start_time = None
         self._update_phase_color()
 
     def on_enter(self):
@@ -113,8 +116,32 @@ class O2Screen(Screen):
         """Called when leaving the screen."""
         self.stop_training()
 
-    def reset_training(self):
-        """Reset training to initial state."""
+    def reset_training(self, save_incomplete: bool = False):
+        """Reset training to initial state.
+
+        Args:
+            save_incomplete: If True, save an incomplete session record
+        """
+        # Save incomplete session if requested and training was in progress
+        if (
+            save_incomplete
+            and self.session_start_time is not None
+            and self.phase not in ("ready", "complete")
+        ):
+            duration = Clock.get_time() - self.session_start_time
+            save_practice_session(
+                training_type="o2",
+                duration_seconds=duration,
+                rounds_completed=self.current_round - 1,
+                parameters={
+                    "total_rounds": self.total_rounds,
+                    "hold_time": self.hold_time,
+                    "initial_rest_time": self.initial_rest_time,
+                    "rest_decrement": self.rest_decrement,
+                },
+                completed=False,
+            )
+
         self.current_round = 1
         self.phase = "ready"
         self.is_running = False
@@ -122,6 +149,7 @@ class O2Screen(Screen):
         self.time_text = "00:00"
         self.phase_text = "Ready"
         self.instruction_text = "Press Start to begin O2 table training"
+        self.session_start_time = None
         self._update_phase_color()
         if hasattr(self, "ids") and "progress_circle" in self.ids:
             self.ids.progress_circle.set_progress(0, duration=0.3)
@@ -141,6 +169,7 @@ class O2Screen(Screen):
         """Start or resume training."""
         self.is_running = True
         if self.phase == "ready":
+            self.session_start_time = Clock.get_time()
             self._start_breathe_phase()
         if self.timer_event is None:
             self.timer_event = Clock.schedule_interval(self._update_timer, 1)
@@ -157,7 +186,7 @@ class O2Screen(Screen):
         if self.timer_event:
             Clock.unschedule(self.timer_event)
             self.timer_event = None
-        self.reset_training()
+        self.reset_training(save_incomplete=True)
 
     def _start_breathe_phase(self):
         """Start the breathe-up phase (15 seconds to prepare)."""
@@ -206,6 +235,23 @@ class O2Screen(Screen):
             self.timer_event = None
         if hasattr(self, "ids") and "progress_circle" in self.ids:
             self.ids.progress_circle.set_progress(100, duration=0.5)
+
+        # Save the practice session
+        if self.session_start_time is not None:
+            duration = Clock.get_time() - self.session_start_time
+            save_practice_session(
+                training_type="o2",
+                duration_seconds=duration,
+                rounds_completed=self.total_rounds,
+                parameters={
+                    "total_rounds": self.total_rounds,
+                    "hold_time": self.hold_time,
+                    "initial_rest_time": self.initial_rest_time,
+                    "rest_decrement": self.rest_decrement,
+                },
+                completed=True,
+            )
+            self.session_start_time = None
 
     def _update_timer(self, dt):
         """Update the timer each second."""

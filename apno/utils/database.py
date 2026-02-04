@@ -1,7 +1,9 @@
 """SQLite database for persisting app data."""
 
+import json
 import os
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 
 from kivy.utils import platform
@@ -69,6 +71,25 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_scores_training_type
             ON scores (training_type)
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS practice_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                training_type TEXT NOT NULL,
+                completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                duration_seconds REAL,
+                rounds_completed INTEGER,
+                parameters TEXT,
+                completed INTEGER DEFAULT 1
+            )
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_practice_sessions_training_type
+            ON practice_sessions (training_type)
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_practice_sessions_completed_at
+            ON practice_sessions (completed_at)
+        """)
         conn.commit()
     finally:
         conn.close()
@@ -109,6 +130,165 @@ def get_best_score(training_type: str) -> float | None:
         )
         row = cursor.fetchone()
         return row["best"] if row and row["best"] is not None else None
+    finally:
+        conn.close()
+
+
+def save_practice_session(
+    training_type: str,
+    duration_seconds: float | None = None,
+    rounds_completed: int | None = None,
+    parameters: dict | None = None,
+    completed: bool = True,
+) -> int:
+    """Save a practice session to the database.
+
+    Args:
+        training_type: The type of training ('co2', 'o2', 'free')
+        duration_seconds: Total session duration in seconds
+        rounds_completed: Number of rounds completed
+        parameters: Dictionary of training parameters specific to the type
+        completed: Whether the session was completed (not stopped early)
+
+    Returns:
+        The ID of the inserted session
+    """
+    conn = get_connection()
+    try:
+        params_json = json.dumps(parameters) if parameters else None
+        cursor = conn.execute(
+            """
+            INSERT INTO practice_sessions
+            (training_type, duration_seconds, rounds_completed, parameters, completed)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                training_type,
+                duration_seconds,
+                rounds_completed,
+                params_json,
+                1 if completed else 0,
+            ),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+
+def get_practice_sessions(
+    training_type: str | None = None,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[dict]:
+    """Get practice sessions from the database.
+
+    Args:
+        training_type: Optional filter by training type
+        limit: Maximum number of sessions to return
+        offset: Number of sessions to skip (for pagination)
+
+    Returns:
+        List of session dictionaries
+    """
+    conn = get_connection()
+    try:
+        if training_type:
+            cursor = conn.execute(
+                """
+                SELECT id, training_type, completed_at, duration_seconds,
+                       rounds_completed, parameters, completed
+                FROM practice_sessions
+                WHERE training_type = ?
+                ORDER BY completed_at DESC
+                LIMIT ? OFFSET ?
+                """,
+                (training_type, limit, offset),
+            )
+        else:
+            cursor = conn.execute(
+                """
+                SELECT id, training_type, completed_at, duration_seconds,
+                       rounds_completed, parameters, completed
+                FROM practice_sessions
+                ORDER BY completed_at DESC
+                LIMIT ? OFFSET ?
+                """,
+                (limit, offset),
+            )
+
+        sessions = []
+        for row in cursor.fetchall():
+            session = dict(row)
+            if session["parameters"]:
+                session["parameters"] = json.loads(session["parameters"])
+            sessions.append(session)
+        return sessions
+    finally:
+        conn.close()
+
+
+def get_sessions_by_date(date: datetime | None = None) -> list[dict]:
+    """Get all practice sessions for a specific date.
+
+    Args:
+        date: The date to filter by (defaults to today)
+
+    Returns:
+        List of session dictionaries for that date
+    """
+    if date is None:
+        date = datetime.now()
+
+    date_str = date.strftime("%Y-%m-%d")
+
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            SELECT id, training_type, completed_at, duration_seconds,
+                   rounds_completed, parameters, completed
+            FROM practice_sessions
+            WHERE date(completed_at) = ?
+            ORDER BY completed_at DESC
+            """,
+            (date_str,),
+        )
+
+        sessions = []
+        for row in cursor.fetchall():
+            session = dict(row)
+            if session["parameters"]:
+                session["parameters"] = json.loads(session["parameters"])
+            sessions.append(session)
+        return sessions
+    finally:
+        conn.close()
+
+
+def get_session_count_by_date(days: int = 30) -> dict[str, int]:
+    """Get the count of practice sessions per day for the last N days.
+
+    Args:
+        days: Number of days to look back
+
+    Returns:
+        Dictionary mapping date strings to session counts
+    """
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            SELECT date(completed_at) as session_date, COUNT(*) as count
+            FROM practice_sessions
+            WHERE completed_at >= date('now', ?)
+            GROUP BY date(completed_at)
+            ORDER BY session_date DESC
+            """,
+            (f"-{days} days",),
+        )
+
+        return {row["session_date"]: row["count"] for row in cursor.fetchall()}
     finally:
         conn.close()
 

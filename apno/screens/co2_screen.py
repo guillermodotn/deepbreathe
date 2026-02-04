@@ -3,6 +3,8 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
+from apno.utils.database import save_practice_session
+
 Builder.load_string("""
 #:import ProgressCircle apno.widgets.progress_circle.ProgressCircle
 #:import StyledButton apno.widgets.styled_button.StyledButton
@@ -113,6 +115,8 @@ class CO2Screen(Screen):
         self.current_phase_duration = 0
         self.phase = "ready"  # ready, breathe, hold, rest, complete
         self.timer_event = None
+        self.session_start_time = None
+        self.session_elapsed_time = 0
         self._update_phase_color()
 
     def on_enter(self):
@@ -132,8 +136,32 @@ class CO2Screen(Screen):
         mins, secs = divmod(seconds, 60)
         return f"{mins:02}:{secs:02}"
 
-    def reset_training(self):
-        """Reset training to initial state."""
+    def reset_training(self, save_incomplete: bool = False):
+        """Reset training to initial state.
+
+        Args:
+            save_incomplete: If True, save an incomplete session record
+        """
+        # Save incomplete session if requested and training was in progress
+        if (
+            save_incomplete
+            and self.session_start_time is not None
+            and self.phase not in ("ready", "complete")
+        ):
+            duration = Clock.get_time() - self.session_start_time
+            save_practice_session(
+                training_type="co2",
+                duration_seconds=duration,
+                rounds_completed=self.current_round - 1,
+                parameters={
+                    "total_rounds": self.total_rounds,
+                    "initial_hold_time": self.initial_hold_time,
+                    "hold_increment": self.hold_increment,
+                    "rest_time": self.rest_time,
+                },
+                completed=False,
+            )
+
         self.current_round = 1
         self.phase = "ready"
         self.is_running = False
@@ -141,6 +169,7 @@ class CO2Screen(Screen):
         self.time_text = "00:00"
         self.phase_text = "Ready"
         self.instruction_text = "Press Start to begin CO2 table training"
+        self.session_start_time = None
         self._update_hold_info()
         self._update_phase_color()
         if hasattr(self, "ids") and "progress_circle" in self.ids:
@@ -177,6 +206,7 @@ class CO2Screen(Screen):
         """Start or resume training."""
         self.is_running = True
         if self.phase == "ready":
+            self.session_start_time = Clock.get_time()
             self._start_breathe_phase()
         if self.timer_event is None:
             self.timer_event = Clock.schedule_interval(self._update_timer, 1)
@@ -193,7 +223,7 @@ class CO2Screen(Screen):
         if self.timer_event:
             Clock.unschedule(self.timer_event)
             self.timer_event = None
-        self.reset_training()
+        self.reset_training(save_incomplete=True)
 
     def _start_breathe_phase(self):
         """Start the breathe-up phase (15 seconds to prepare)."""
@@ -243,6 +273,23 @@ class CO2Screen(Screen):
             self.timer_event = None
         if hasattr(self, "ids") and "progress_circle" in self.ids:
             self.ids.progress_circle.set_progress(100, duration=0.5)
+
+        # Save the practice session
+        if self.session_start_time is not None:
+            duration = Clock.get_time() - self.session_start_time
+            save_practice_session(
+                training_type="co2",
+                duration_seconds=duration,
+                rounds_completed=self.total_rounds,
+                parameters={
+                    "total_rounds": self.total_rounds,
+                    "initial_hold_time": self.initial_hold_time,
+                    "hold_increment": self.hold_increment,
+                    "rest_time": self.rest_time,
+                },
+                completed=True,
+            )
+            self.session_start_time = None
 
     def _update_timer(self, dt):
         """Update the timer each second."""
