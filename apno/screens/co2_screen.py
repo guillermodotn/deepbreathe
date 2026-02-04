@@ -98,7 +98,7 @@ class CO2Screen(Screen):
     phase_text = StringProperty("Ready")
     instruction_text = StringProperty("Press Start to begin training")
     hold_info_text = StringProperty("")
-    phase_color = [0.9, 0.5, 0.2, 1]
+    phase_color = [1.0, 0.7, 0.2, 1]  # Amber
 
     current_round = NumericProperty(1)
     total_rounds = NumericProperty(8)
@@ -332,11 +332,12 @@ class CO2Screen(Screen):
 
     def _update_phase_color(self):
         """Update the color based on current phase."""
+        # Amber theme for CO2 training
         colors = {
             "ready": [0.5, 0.5, 0.5, 1],
-            "breathe": [0.2, 0.6, 0.9, 1],  # Blue
-            "hold": [0.9, 0.3, 0.3, 1],  # Red
+            "breathe": [1.0, 0.85, 0.5, 1],  # Light amber
+            "hold": [1.0, 0.7, 0.2, 1],  # Amber (main CO2 color)
             "rest": [0.2, 0.7, 0.4, 1],  # Green
-            "complete": [0.9, 0.7, 0.2, 1],  # Gold
+            "complete": [1.0, 0.8, 0.3, 1],  # Golden amber
         }
         self.phase_color = colors.get(self.phase, [0.5, 0.5, 0.5, 1])

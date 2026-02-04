@@ -88,7 +88,7 @@ class O2Screen(Screen):
     time_text = StringProperty("00:00")
     phase_text = StringProperty("Ready")
     instruction_text = StringProperty("Press Start to begin training")
-    phase_color = [0.2, 0.7, 0.4, 1]
+    phase_color = [0.25, 0.45, 0.85, 1]  # Deep Blue
 
     current_round = NumericProperty(1)
     total_rounds = NumericProperty(8)
@@ -294,11 +294,12 @@ class O2Screen(Screen):
 
     def _update_phase_color(self):
         """Update the color based on current phase."""
+        # Deep Blue theme for O2 training
         colors = {
             "ready": [0.5, 0.5, 0.5, 1],
-            "breathe": [0.2, 0.6, 0.9, 1],  # Blue
-            "hold": [0.9, 0.3, 0.3, 1],  # Red
+            "breathe": [0.5, 0.7, 0.95, 1],  # Light blue
+            "hold": [0.25, 0.45, 0.85, 1],  # Deep Blue (main O2 color)
             "rest": [0.2, 0.7, 0.4, 1],  # Green
-            "complete": [0.9, 0.7, 0.2, 1],  # Gold
+            "complete": [0.4, 0.6, 0.95, 1],  # Bright blue
         }
         self.phase_color = colors.get(self.phase, [0.5, 0.5, 0.5, 1])

@@ -167,9 +167,9 @@ class MonthGrid(BoxLayout):
             lbl.bind(size=lbl.setter("text_size"))
             grid.add_widget(lbl)
 
-    # Training type colors
-    CO2_COLOR = [0.95, 0.6, 0.2, 1]  # Orange
-    O2_COLOR = [0.2, 0.6, 0.9, 1]  # Blue
+    # Training type colors (Amber & Deep Blue - Fire & Water theme)
+    CO2_COLOR = [1.0, 0.7, 0.2, 1]  # Amber
+    O2_COLOR = [0.25, 0.45, 0.85, 1]  # Deep Blue
     EMPTY_COLOR = [0.92, 0.92, 0.92, 1]
     FUTURE_COLOR = [0.96, 0.96, 0.96, 1]
 
