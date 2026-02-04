@@ -33,7 +33,7 @@ Builder.load_string("""
 class StyledButton(ButtonBehavior, Label):
     """A styled filled button."""
 
-    bg_color = ColorProperty([0.2, 0.5, 0.9, 1])
+    bg_color = ColorProperty([0.15, 0.40, 0.65, 1])  # Deep Ocean Blue
     text_color = ColorProperty([1, 1, 1, 1])
     radius = [8]
 
@@ -62,7 +62,7 @@ class StyledButton(ButtonBehavior, Label):
 class OutlinedButton(ButtonBehavior, Label):
     """A styled outlined button."""
 
-    border_color = ColorProperty([0.2, 0.5, 0.9, 1])
+    border_color = ColorProperty([0.15, 0.40, 0.65, 1])  # Deep Ocean Blue
     bg_color = ColorProperty([1, 1, 1, 1])
     radius = [8]
 

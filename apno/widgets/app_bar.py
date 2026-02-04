@@ -58,7 +58,7 @@ class AppBar(BoxLayout):
     """A top app bar with menu button and title."""
 
     title = StringProperty("Apno")
-    bg_color = ColorProperty([0.2, 0.5, 0.9, 1])
+    bg_color = ColorProperty([0.15, 0.40, 0.65, 1])  # Deep Ocean Blue
     text_color = ColorProperty([1, 1, 1, 1])
 
     def __init__(self, **kwargs):

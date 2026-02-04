@@ -20,8 +20,8 @@ LabelBase.register(
 
 class Apno(App):
     def build(self):
-        # Set window background color
-        Window.clearcolor = (0.98, 0.98, 0.98, 1)
+        # Set window background color (cool white - Ocean Blue theme)
+        Window.clearcolor = (0.97, 0.98, 1.0, 1)
 
     def change_screen(self, screen_name, title):
         """Navigate to a different screen."""

@@ -48,7 +48,7 @@ Builder.load_string("""
         text: "Apno"
         font_size: sp(24)
         bold: True
-        color: 0.2, 0.5, 0.9, 1
+        color: 0.15, 0.40, 0.65, 1
         size_hint_y: None
         height: dp(56)
         text_size: self.width - dp(32), None
@@ -60,7 +60,7 @@ Builder.load_string("""
         height: dp(1)
         canvas:
             Color:
-                rgba: 0.9, 0.9, 0.9, 1
+                rgba: 0.82, 0.88, 0.95, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -90,7 +90,7 @@ Builder.load_string("""
         height: dp(1)
         canvas:
             Color:
-                rgba: 0.9, 0.9, 0.9, 1
+                rgba: 0.82, 0.88, 0.95, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -116,7 +116,7 @@ class NavDrawerItem(ButtonBehavior, BoxLayout):
     icon_name = StringProperty("")
     icon_char = StringProperty("")
     text = StringProperty("")
-    text_color = ColorProperty([0.2, 0.2, 0.2, 1])
+    text_color = ColorProperty([0.12, 0.18, 0.28, 1])  # Dark Navy
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -160,7 +160,7 @@ class NavDrawerContainer(Widget):
     is_open = BooleanProperty(False)
     drawer_x = NumericProperty(0)
     overlay_opacity = NumericProperty(0)
-    bg_color = ColorProperty([1, 1, 1, 1])
+    bg_color = ColorProperty([0.92, 0.96, 1.0, 1])  # Light Sky Blue
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
