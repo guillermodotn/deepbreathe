@@ -117,23 +117,41 @@ class DaySquare(Widget):
                 Color(*self.bg_color)
                 Mesh(
                     vertices=[
-                        self.x, self.y, 0, 0,  # bottom-left
-                        self.x + self.width, self.y, 0, 0,  # bottom-right
-                        self.x, self.y + self.height, 0, 0,  # top-left
+                        self.x,
+                        self.y,
+                        0,
+                        0,  # bottom-left
+                        self.x + self.width,
+                        self.y,
+                        0,
+                        0,  # bottom-right
+                        self.x,
+                        self.y + self.height,
+                        0,
+                        0,  # top-left
                     ],
                     indices=[0, 1, 2],
-                    mode='triangles'
+                    mode="triangles",
                 )
                 # Draw diagonal split: top-right triangle (O2 - blue)
                 Color(*self.bg_color2)
                 Mesh(
                     vertices=[
-                        self.x + self.width, self.y, 0, 0,  # bottom-right
-                        self.x + self.width, self.y + self.height, 0, 0,  # top-right
-                        self.x, self.y + self.height, 0, 0,  # top-left
+                        self.x + self.width,
+                        self.y,
+                        0,
+                        0,  # bottom-right
+                        self.x + self.width,
+                        self.y + self.height,
+                        0,
+                        0,  # top-right
+                        self.x,
+                        self.y + self.height,
+                        0,
+                        0,  # top-left
                     ],
                     indices=[0, 1, 2],
-                    mode='triangles'
+                    mode="triangles",
                 )
             else:
                 # Single color

@@ -1,6 +1,11 @@
 from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty, NumericProperty, StringProperty
+from kivy.properties import (
+    BooleanProperty,
+    ListProperty,
+    NumericProperty,
+    StringProperty,
+)
 from kivy.uix.screenmanager import Screen
 
 from apno.utils.database import save_practice_session
@@ -98,7 +103,7 @@ class CO2Screen(Screen):
     phase_text = StringProperty("Ready")
     instruction_text = StringProperty("Press Start to begin training")
     hold_info_text = StringProperty("")
-    phase_color = [1.0, 0.7, 0.2, 1]  # Amber
+    phase_color = ListProperty([1.0, 0.7, 0.2, 1])  # Amber
 
     current_round = NumericProperty(1)
     total_rounds = NumericProperty(8)
@@ -335,9 +340,9 @@ class CO2Screen(Screen):
         # Amber theme for CO2 training
         colors = {
             "ready": [0.5, 0.5, 0.5, 1],
-            "breathe": [1.0, 0.85, 0.5, 1],  # Light amber
+            "breathe": [0.6, 0.6, 0.6, 1],  # Grey
             "hold": [1.0, 0.7, 0.2, 1],  # Amber (main CO2 color)
             "rest": [0.2, 0.7, 0.4, 1],  # Green
-            "complete": [1.0, 0.8, 0.3, 1],  # Golden amber
+            "complete": [1.0, 0.7, 0.2, 1],  # Amber
         }
         self.phase_color = colors.get(self.phase, [0.5, 0.5, 0.5, 1])

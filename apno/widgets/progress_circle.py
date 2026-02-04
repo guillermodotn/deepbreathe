@@ -11,7 +11,7 @@ class ProgressCircle(Widget):
     progress = NumericProperty(0)  # Progress percentage (0 to 100)
     progress_color = ListProperty([0.15, 0.40, 0.65, 1])  # Deep Ocean Blue
     line_width = NumericProperty(8)
-    background_color = ListProperty([0.85, 0.90, 0.95, 1])  # Light blue-grey
+    background_color = ListProperty([0.9, 0.9, 0.9, 1])  # Light grey
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

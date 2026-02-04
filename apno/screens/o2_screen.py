@@ -1,6 +1,11 @@
 from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty, NumericProperty, StringProperty
+from kivy.properties import (
+    BooleanProperty,
+    ListProperty,
+    NumericProperty,
+    StringProperty,
+)
 from kivy.uix.screenmanager import Screen
 
 from apno.utils.database import save_practice_session
@@ -88,7 +93,7 @@ class O2Screen(Screen):
     time_text = StringProperty("00:00")
     phase_text = StringProperty("Ready")
     instruction_text = StringProperty("Press Start to begin training")
-    phase_color = [0.25, 0.45, 0.85, 1]  # Deep Blue
+    phase_color = ListProperty([0.25, 0.45, 0.85, 1])  # Deep Blue
 
     current_round = NumericProperty(1)
     total_rounds = NumericProperty(8)
@@ -297,9 +302,9 @@ class O2Screen(Screen):
         # Deep Blue theme for O2 training
         colors = {
             "ready": [0.5, 0.5, 0.5, 1],
-            "breathe": [0.5, 0.7, 0.95, 1],  # Light blue
+            "breathe": [0.6, 0.6, 0.6, 1],  # Grey
             "hold": [0.25, 0.45, 0.85, 1],  # Deep Blue (main O2 color)
             "rest": [0.2, 0.7, 0.4, 1],  # Green
-            "complete": [0.4, 0.6, 0.95, 1],  # Bright blue
+            "complete": [0.25, 0.45, 0.85, 1],  # Deep Blue
         }
         self.phase_color = colors.get(self.phase, [0.5, 0.5, 0.5, 1])
