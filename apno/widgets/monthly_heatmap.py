@@ -1,0 +1,265 @@
+"""Monthly practice heatmap widget."""
+
+from calendar import monthrange
+from datetime import datetime
+
+from kivy.graphics import Color, RoundedRectangle
+from kivy.lang import Builder
+from kivy.properties import ListProperty, NumericProperty, StringProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.widget import Widget
+
+from apno.utils.database import get_session_count_by_date
+
+Builder.load_string("""
+<DaySquare>:
+    size_hint: 1, None
+    height: self.width if self.width > 0 else dp(20)
+
+<MonthGrid>:
+    orientation: "vertical"
+    spacing: dp(2)
+    size_hint_y: None
+    height: self.minimum_height
+
+    Label:
+        text: root.month_title
+        font_size: sp(13)
+        bold: True
+        color: 0.3, 0.3, 0.3, 1
+        size_hint_y: None
+        height: dp(20)
+        halign: "center"
+        text_size: self.size
+        valign: "middle"
+
+    GridLayout:
+        id: weekday_headers
+        cols: 7
+        size_hint_y: None
+        height: dp(14)
+        spacing: dp(2)
+
+    GridLayout:
+        id: days_grid
+        cols: 7
+        spacing: dp(2)
+        size_hint_y: None
+        height: self.minimum_height
+
+<MonthlyHeatmap>:
+    orientation: "vertical"
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(12)
+    spacing: dp(8)
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: None
+        height: dp(24)
+
+        Label:
+            text: "Practice Activity"
+            font_size: sp(15)
+            bold: True
+            color: 0.2, 0.2, 0.2, 1
+            halign: "left"
+            text_size: self.size
+            valign: "middle"
+
+        Label:
+            text: root.streak_text
+            font_size: sp(13)
+            color: 0.4, 0.4, 0.4, 1
+            halign: "right"
+            text_size: self.size
+            valign: "middle"
+
+    BoxLayout:
+        id: months_container
+        orientation: "horizontal"
+        spacing: dp(16)
+        size_hint_y: None
+        height: max(prev_month_grid.height, curr_month_grid.height) if prev_month_grid.height > 0 else dp(150)
+
+        MonthGrid:
+            id: prev_month_grid
+            size_hint_x: 0.5
+
+        MonthGrid:
+            id: curr_month_grid
+            size_hint_x: 0.5
+""")  # noqa
+
+
+class DaySquare(Widget):
+    """A single day square in the heatmap."""
+
+    bg_color = ListProperty([0.9, 0.9, 0.9, 1])
+    day_num = NumericProperty(0)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(pos=self._update_canvas, size=self._update_canvas)
+        self.bind(bg_color=self._update_canvas)
+        self._update_canvas()
+
+    def _update_canvas(self, *args):
+        self.canvas.clear()
+        with self.canvas:
+            Color(*self.bg_color)
+            RoundedRectangle(pos=self.pos, size=self.size, radius=[3])
+
+
+class MonthGrid(BoxLayout):
+    """A single month grid with title and days."""
+
+    month_title = StringProperty("")
+
+    def on_kv_post(self, base_widget):
+        """Called after kv rules are applied."""
+        self._build_weekday_headers()
+
+    def _build_weekday_headers(self):
+        """Build the weekday header row."""
+        weekdays = ["M", "T", "W", "T", "F", "S", "S"]
+        grid = self.ids.weekday_headers
+        grid.clear_widgets()
+        for day in weekdays:
+            lbl = Label(
+                text=day,
+                font_size="10sp",
+                color=[0.5, 0.5, 0.5, 1],
+                size_hint=(1, 1),
+                halign="center",
+                valign="middle",
+            )
+            lbl.bind(size=lbl.setter("text_size"))
+            grid.add_widget(lbl)
+
+    def build_month(
+        self,
+        year: int,
+        month: int,
+        practice_data: dict,
+        today_year: int,
+        today_month: int,
+        today_day: int,
+    ):
+        """Build the calendar grid for a specific month."""
+        # Set month title
+        month_date = datetime(year, month, 1)
+        self.month_title = month_date.strftime("%b %Y")
+
+        grid = self.ids.days_grid
+        grid.clear_widgets()
+
+        # Get first day of month (0=Monday, 6=Sunday)
+        first_weekday, num_days = monthrange(year, month)
+
+        # Colors
+        empty_color = [0.92, 0.92, 0.92, 1]
+        future_color = [0.96, 0.96, 0.96, 1]
+
+        # Add empty squares for days before the 1st
+        for _ in range(first_weekday):
+            square = DaySquare(bg_color=[0, 0, 0, 0])
+            grid.add_widget(square)
+
+        # Add squares for each day
+        for day in range(1, num_days + 1):
+            date_str = f"{year}-{month:02d}-{day:02d}"
+            has_practice = date_str in practice_data and practice_data[date_str] > 0
+
+            is_future = (
+                year > today_year
+                or (year == today_year and month > today_month)
+                or (year == today_year and month == today_month and day > today_day)
+            )
+
+            if is_future:
+                color = future_color
+            elif has_practice:
+                # Practiced day - vary intensity based on count
+                count = practice_data.get(date_str, 0)
+                if count >= 3:
+                    color = [0.1, 0.6, 0.3, 1]  # Dark green
+                elif count >= 2:
+                    color = [0.2, 0.7, 0.4, 1]  # Medium green
+                else:
+                    color = [0.4, 0.8, 0.5, 1]  # Light green
+            else:
+                color = empty_color
+
+            square = DaySquare(bg_color=color, day_num=day)
+            grid.add_widget(square)
+
+        # Fill remaining squares
+        remaining = (7 - ((first_weekday + num_days) % 7)) % 7
+        for _ in range(remaining):
+            square = DaySquare(bg_color=[0, 0, 0, 0])
+            grid.add_widget(square)
+
+
+class MonthlyHeatmap(BoxLayout):
+    """A GitHub-style monthly heatmap showing practice days for two months."""
+
+    streak_text = StringProperty("")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(pos=self._update_bg, size=self._update_bg)
+        self._update_bg()
+
+    def _update_bg(self, *args):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            # Shadow
+            Color(0, 0, 0, 0.08)
+            RoundedRectangle(pos=(self.x + 2, self.y - 2), size=self.size, radius=[12])
+            # Background
+            Color(1, 1, 1, 1)
+            RoundedRectangle(pos=self.pos, size=self.size, radius=[12])
+
+    def on_kv_post(self, base_widget):
+        """Called after kv rules are applied."""
+        self.refresh()
+
+    def refresh(self):
+        """Refresh the heatmap with current data."""
+        now = datetime.now()
+        curr_year = now.year
+        curr_month = now.month
+        today_day = now.day
+
+        # Calculate previous month
+        if curr_month == 1:
+            prev_year = curr_year - 1
+            prev_month = 12
+        else:
+            prev_year = curr_year
+            prev_month = curr_month - 1
+
+        # Get practice data for both months (62 days covers both)
+        practice_data = get_session_count_by_date(days=62)
+
+        # Count practiced days across both months
+        practiced_days = 0
+        for date_str, count in practice_data.items():
+            if date_str:
+                if date_str.startswith(
+                    f"{curr_year}-{curr_month:02d}"
+                ) or date_str.startswith(f"{prev_year}-{prev_month:02d}"):
+                    practiced_days += 1
+
+        self.streak_text = f"{practiced_days} days"
+
+        # Build both month grids
+        self.ids.prev_month_grid.build_month(
+            prev_year, prev_month, practice_data, curr_year, curr_month, today_day
+        )
+        self.ids.curr_month_grid.build_month(
+            curr_year, curr_month, practice_data, curr_year, curr_month, today_day
+        )

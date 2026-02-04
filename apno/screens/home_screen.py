@@ -6,6 +6,7 @@ from apno.utils.icons import icon
 
 Builder.load_string("""
 #:import ClickableCard apno.widgets.styled_card.ClickableCard
+#:import MonthlyHeatmap apno.widgets.monthly_heatmap.MonthlyHeatmap
 
 <TrainingCard@ClickableCard>:
     orientation: "horizontal"
@@ -51,22 +52,29 @@ Builder.load_string("""
 
 
 <HomeScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        padding: dp(16)
-        spacing: dp(16)
-
-        Label:
-            text: "Choose Your Training"
-            font_size: sp(22)
-            bold: True
-            color: 0.1, 0.1, 0.1, 1
-            size_hint_y: None
-            height: dp(40)
+    ScrollView:
+        do_scroll_x: False
+        bar_width: dp(4)
+        bar_color: 0.5, 0.5, 0.5, 0.5
+        bar_inactive_color: 0.5, 0.5, 0.5, 0.2
 
         BoxLayout:
             orientation: "vertical"
+            padding: dp(16)
             spacing: dp(12)
+            size_hint_y: None
+            height: self.minimum_height
+
+            MonthlyHeatmap:
+                id: heatmap
+
+            Label:
+                text: "Choose Your Training"
+                font_size: sp(16)
+                bold: True
+                color: 0.1, 0.1, 0.1, 1
+                size_hint_y: None
+                height: dp(28)
 
             TrainingCard:
                 training_title: "O2 Tables"
@@ -89,18 +97,15 @@ Builder.load_string("""
                 training_color: 0.4, 0.4, 0.8, 1
                 on_release: app.change_screen("free_screen", "Free Training")
 
-        Widget:
-            # Spacer
-
-        Label:
-            text: "Tip: Start with CO2 tables, then progress to O2 tables."
-            font_size: sp(13)
-            color: 0.5, 0.5, 0.5, 1
-            size_hint_y: None
-            height: dp(32)
-            text_size: self.size
-            halign: "center"
-            valign: "middle"
+            Label:
+                text: "Tip: Start with CO2 tables, then progress to O2 tables."
+                font_size: sp(13)
+                color: 0.5, 0.5, 0.5, 1
+                size_hint_y: None
+                height: dp(32)
+                text_size: self.width, None
+                halign: "center"
+                valign: "middle"
 """)
 
 
@@ -109,3 +114,8 @@ class HomeScreen(Screen):
     icon_lungs = StringProperty(icon("lungs"))
     icon_wind = StringProperty(icon("weather-windy"))
     icon_timer = StringProperty(icon("timer-outline"))
+
+    def on_enter(self):
+        """Refresh heatmap when entering the screen."""
+        if hasattr(self, "ids") and "heatmap" in self.ids:
+            self.ids.heatmap.refresh()
