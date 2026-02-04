@@ -293,5 +293,40 @@ def get_session_count_by_date(days: int = 30) -> dict[str, int]:
         conn.close()
 
 
+def get_training_types_by_date(days: int = 30) -> dict[str, set[str]]:
+    """Get the training types done per day for the last N days.
+
+    Args:
+        days: Number of days to look back
+
+    Returns:
+        Dictionary mapping date strings to sets of training types done that day
+    """
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            SELECT date(completed_at) as session_date, training_type
+            FROM practice_sessions
+            WHERE completed_at >= date('now', ?)
+              AND training_type IN ('co2', 'o2')
+            GROUP BY date(completed_at), training_type
+            ORDER BY session_date DESC
+            """,
+            (f"-{days} days",),
+        )
+
+        result: dict[str, set[str]] = {}
+        for row in cursor.fetchall():
+            date_str = row["session_date"]
+            training_type = row["training_type"]
+            if date_str not in result:
+                result[date_str] = set()
+            result[date_str].add(training_type)
+        return result
+    finally:
+        conn.close()
+
+
 # Initialize database on module import
 init_db()

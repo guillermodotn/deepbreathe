@@ -3,14 +3,14 @@
 from calendar import monthrange
 from datetime import datetime
 
-from kivy.graphics import Color, RoundedRectangle
+from kivy.graphics import Color, Mesh, RoundedRectangle
 from kivy.lang import Builder
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 
-from apno.utils.database import get_session_count_by_date
+from apno.utils.database import get_training_types_by_date
 
 Builder.load_string("""
 <DaySquare>:
@@ -98,19 +98,47 @@ class DaySquare(Widget):
     """A single day square in the heatmap."""
 
     bg_color = ListProperty([0.9, 0.9, 0.9, 1])
+    bg_color2 = ListProperty([0.9, 0.9, 0.9, 1])
+    is_split = NumericProperty(0)  # 0 = single color, 1 = diagonal split
     day_num = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.bind(pos=self._update_canvas, size=self._update_canvas)
-        self.bind(bg_color=self._update_canvas)
+        self.bind(bg_color=self._update_canvas, bg_color2=self._update_canvas)
+        self.bind(is_split=self._update_canvas)
         self._update_canvas()
 
     def _update_canvas(self, *args):
         self.canvas.clear()
         with self.canvas:
-            Color(*self.bg_color)
-            RoundedRectangle(pos=self.pos, size=self.size, radius=[3])
+            if self.is_split:
+                # Draw diagonal split: bottom-left triangle (CO2 - orange)
+                Color(*self.bg_color)
+                Mesh(
+                    vertices=[
+                        self.x, self.y, 0, 0,  # bottom-left
+                        self.x + self.width, self.y, 0, 0,  # bottom-right
+                        self.x, self.y + self.height, 0, 0,  # top-left
+                    ],
+                    indices=[0, 1, 2],
+                    mode='triangles'
+                )
+                # Draw diagonal split: top-right triangle (O2 - blue)
+                Color(*self.bg_color2)
+                Mesh(
+                    vertices=[
+                        self.x + self.width, self.y, 0, 0,  # bottom-right
+                        self.x + self.width, self.y + self.height, 0, 0,  # top-right
+                        self.x, self.y + self.height, 0, 0,  # top-left
+                    ],
+                    indices=[0, 1, 2],
+                    mode='triangles'
+                )
+            else:
+                # Single color
+                Color(*self.bg_color)
+                RoundedRectangle(pos=self.pos, size=self.size, radius=[3])
 
 
 class MonthGrid(BoxLayout):
@@ -139,6 +167,12 @@ class MonthGrid(BoxLayout):
             lbl.bind(size=lbl.setter("text_size"))
             grid.add_widget(lbl)
 
+    # Training type colors
+    CO2_COLOR = [0.95, 0.6, 0.2, 1]  # Orange
+    O2_COLOR = [0.2, 0.6, 0.9, 1]  # Blue
+    EMPTY_COLOR = [0.92, 0.92, 0.92, 1]
+    FUTURE_COLOR = [0.96, 0.96, 0.96, 1]
+
     def build_month(
         self,
         year: int,
@@ -148,7 +182,11 @@ class MonthGrid(BoxLayout):
         today_month: int,
         today_day: int,
     ):
-        """Build the calendar grid for a specific month."""
+        """Build the calendar grid for a specific month.
+
+        Args:
+            practice_data: Dictionary mapping date strings to sets of training types
+        """
         # Set month title
         month_date = datetime(year, month, 1)
         self.month_title = month_date.strftime("%b %Y")
@@ -159,10 +197,6 @@ class MonthGrid(BoxLayout):
         # Get first day of month (0=Monday, 6=Sunday)
         first_weekday, num_days = monthrange(year, month)
 
-        # Colors
-        empty_color = [0.92, 0.92, 0.92, 1]
-        future_color = [0.96, 0.96, 0.96, 1]
-
         # Add empty squares for days before the 1st
         for _ in range(first_weekday):
             square = DaySquare(bg_color=[0, 0, 0, 0])
@@ -171,7 +205,7 @@ class MonthGrid(BoxLayout):
         # Add squares for each day
         for day in range(1, num_days + 1):
             date_str = f"{year}-{month:02d}-{day:02d}"
-            has_practice = date_str in practice_data and practice_data[date_str] > 0
+            training_types = practice_data.get(date_str, set())
 
             is_future = (
                 year > today_year
@@ -180,20 +214,25 @@ class MonthGrid(BoxLayout):
             )
 
             if is_future:
-                color = future_color
-            elif has_practice:
-                # Practiced day - vary intensity based on count
-                count = practice_data.get(date_str, 0)
-                if count >= 3:
-                    color = [0.1, 0.6, 0.3, 1]  # Dark green
-                elif count >= 2:
-                    color = [0.2, 0.7, 0.4, 1]  # Medium green
-                else:
-                    color = [0.4, 0.8, 0.5, 1]  # Light green
+                square = DaySquare(bg_color=self.FUTURE_COLOR, day_num=day)
+            elif "co2" in training_types and "o2" in training_types:
+                # Both trainings - diagonal split
+                square = DaySquare(
+                    bg_color=self.CO2_COLOR,
+                    bg_color2=self.O2_COLOR,
+                    is_split=1,
+                    day_num=day,
+                )
+            elif "co2" in training_types:
+                # CO2 only - orange
+                square = DaySquare(bg_color=self.CO2_COLOR, day_num=day)
+            elif "o2" in training_types:
+                # O2 only - blue
+                square = DaySquare(bg_color=self.O2_COLOR, day_num=day)
             else:
-                color = empty_color
+                # No practice
+                square = DaySquare(bg_color=self.EMPTY_COLOR, day_num=day)
 
-            square = DaySquare(bg_color=color, day_num=day)
             grid.add_widget(square)
 
         # Fill remaining squares
@@ -243,11 +282,11 @@ class MonthlyHeatmap(BoxLayout):
             prev_month = curr_month - 1
 
         # Get practice data for both months (62 days covers both)
-        practice_data = get_session_count_by_date(days=62)
+        practice_data = get_training_types_by_date(days=62)
 
         # Count practiced days across both months
         practiced_days = 0
-        for date_str, count in practice_data.items():
+        for date_str in practice_data:
             if date_str:
                 if date_str.startswith(
                     f"{curr_year}-{curr_month:02d}"
