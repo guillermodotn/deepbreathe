@@ -23,7 +23,7 @@ A cross-platform apnea and breath-holding training app built with Python and Kiv
 
 ```bash
 # Install development dependencies
-uv sync --extra dev
+uv sync --group dev
 
 # Install pre-commit hooks
 uv run pre-commit install
@@ -49,7 +49,7 @@ APNO_DEV=1 uv run apno
 uv run ruff check .
 ```
 
-```
+```bash
 uv run ruff format .
 ```
 
