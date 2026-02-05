@@ -1,6 +1,7 @@
 from kivy.animation import Animation
 from kivy.graphics import Color, Rectangle, RoundedRectangle
 from kivy.lang import Builder
+from kivy.metrics import dp
 from kivy.properties import (
     BooleanProperty,
     ColorProperty,
@@ -12,6 +13,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
 from apno.utils.icons import icon
+
+DRAWER_WIDTH = 280  # in dp units
 
 Builder.load_string("""
 <NavDrawerItem>:
@@ -170,7 +173,7 @@ class NavDrawerContainer(Widget):
         self.bind(drawer_x=self._update_layout)
         self.bind(overlay_opacity=self._update_layout)
         # Start closed
-        self.drawer_x = -280
+        self.drawer_x = -dp(DRAWER_WIDTH)
         self._update_layout()
 
     def _update_layout(self, *args):
@@ -206,7 +209,7 @@ class NavDrawerContainer(Widget):
     def close(self):
         self.is_open = False
         anim = Animation(
-            drawer_x=-280,
+            drawer_x=-dp(DRAWER_WIDTH),
             overlay_opacity=0,
             duration=0.2,
             t="out_cubic",

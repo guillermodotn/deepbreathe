@@ -4,18 +4,23 @@ import kivy
 from kivy.app import App
 from kivy.core.text import LabelBase
 from kivy.core.window import Window
+from kivy.utils import platform
 
-kivy.require("2.3.1")
+kivy.require("2.3.0")
 
-# Set a reasonable default window size for desktop
-Window.size = (400, 700)
+# Set a reasonable default window size for desktop only
+if platform not in ("android", "ios"):
+    Window.size = (400, 700)
 
 # Register Material Design Icons font
 FONTS_DIR = os.path.join(os.path.dirname(__file__), "assets", "fonts")
-LabelBase.register(
-    name="Icons",
-    fn_regular=os.path.join(FONTS_DIR, "materialdesignicons-webfont.ttf"),
-)
+try:
+    LabelBase.register(
+        name="Icons",
+        fn_regular=os.path.join(FONTS_DIR, "materialdesignicons-webfont.ttf"),
+    )
+except Exception as e:
+    print(f"Warning: Could not register Icons font: {e}")
 
 
 class Apno(App):

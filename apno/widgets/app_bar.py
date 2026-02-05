@@ -1,6 +1,7 @@
 from kivy.factory import Factory
 from kivy.graphics import Color, Rectangle
 from kivy.lang import Builder
+from kivy.metrics import dp
 from kivy.properties import ColorProperty, StringProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
@@ -20,7 +21,7 @@ class MenuButton(ButtonBehavior, Label):
         self.font_name = "Icons"
         self.font_size = "24sp"
         self.size_hint = (None, None)
-        self.size = (48, 48)
+        self.size = (dp(48), dp(48))
         self.bind(icon_color=self._update_color)
         self._update_color()
 
@@ -39,6 +40,7 @@ Builder.load_string("""
 
     MenuButton:
         icon_color: root.text_color
+        pos_hint: {"center_y": 0.5}
         on_release: app.root.ids.nav_drawer.toggle()
 
     Label:
