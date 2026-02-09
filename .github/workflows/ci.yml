@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "**.py"
+      - "**.kv"
   pull_request:
     paths:
       - "**.py"
+      - "**.kv"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
