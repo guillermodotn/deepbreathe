@@ -5,7 +5,10 @@ from datetime import datetime
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 
-from apno.utils.database import get_practice_sessions
+from apno.utils.database import (
+    get_contraction_count_for_session,
+    get_practice_sessions,
+)
 from apno.utils.icons import icon
 
 Builder.load_string("""
@@ -186,12 +189,30 @@ class HistoryScreen(Screen):
             rounds = session.get("rounds_completed")
             rounds_str = f"{rounds} rounds" if rounds else ""
 
+            # Get contraction count
+            session_id = session.get("id")
+            contraction_count = (
+                get_contraction_count_for_session(session_id) if session_id else 0
+            )
+            contractions_str = (
+                f"{contraction_count} contractions" if contraction_count > 0 else ""
+            )
+
+            # Combine rounds and contractions for display
+            details_str = rounds_str
+            if contractions_str:
+                details_str = (
+                    f"{rounds_str} • {contractions_str}"
+                    if rounds_str
+                    else contractions_str
+                )
+
             entry = Builder.load_string(f"""
 HistoryEntry:
     training_type: "{info["name"]}"
     completed_at: "{date_str}"
     duration_text: "{duration_str}"
-    rounds_text: "{rounds_str}"
+    rounds_text: "{details_str}"
     icon_color: {info["color"]}
     icon_name: "{icon(info["icon"])}"
 """)

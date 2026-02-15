@@ -90,6 +90,20 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_practice_sessions_completed_at
             ON practice_sessions (completed_at)
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS contractions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id INTEGER NOT NULL,
+                seconds_into_hold REAL NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (session_id) REFERENCES practice_sessions (id)
+                    ON DELETE CASCADE
+            )
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_contractions_session_id
+            ON contractions (session_id)
+        """)
         conn.commit()
     finally:
         conn.close()
@@ -324,6 +338,74 @@ def get_training_types_by_date(days: int = 30) -> dict[str, set[str]]:
                 result[date_str] = set()
             result[date_str].add(training_type)
         return result
+    finally:
+        conn.close()
+
+
+def save_contraction(session_id: int, seconds_into_hold: float) -> int:
+    """Record a contraction during a breath hold.
+
+    Args:
+        session_id: The ID of the practice session
+        seconds_into_hold: Time in seconds when contraction occurred
+
+    Returns:
+        The ID of the inserted contraction
+    """
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            "INSERT INTO contractions (session_id, seconds_into_hold) VALUES (?, ?)",
+            (session_id, seconds_into_hold),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+
+def get_contractions_for_session(session_id: int) -> list[dict]:
+    """Get all contractions for a specific session.
+
+    Args:
+        session_id: The practice session ID
+
+    Returns:
+        List of contraction dictionaries sorted by time
+    """
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            """
+            SELECT id, seconds_into_hold, created_at
+            FROM contractions
+            WHERE session_id = ?
+            ORDER BY seconds_into_hold ASC
+            """,
+            (session_id,),
+        )
+        return [dict(row) for row in cursor.fetchall()]
+    finally:
+        conn.close()
+
+
+def get_contraction_count_for_session(session_id: int) -> int:
+    """Get the count of contractions for a session.
+
+    Args:
+        session_id: The practice session ID
+
+    Returns:
+        Number of contractions recorded
+    """
+    conn = get_connection()
+    try:
+        cursor = conn.execute(
+            "SELECT COUNT(*) as count FROM contractions WHERE session_id = ?",
+            (session_id,),
+        )
+        row = cursor.fetchone()
+        return row["count"] if row else 0
     finally:
         conn.close()
 

@@ -3,7 +3,12 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import Screen
 
-from apno.utils.database import get_best_score, save_practice_session, save_score
+from apno.utils.database import (
+    get_best_score,
+    save_contraction,
+    save_practice_session,
+    save_score,
+)
 
 Builder.load_string("""
 #:import ProgressCircle apno.widgets.progress_circle.ProgressCircle
@@ -34,6 +39,7 @@ Builder.load_string("""
             height: dp(44)
 
         RelativeLayout:
+            id: chrono_area
             size_hint_y: 1
 
             ProgressCircle:
@@ -51,6 +57,15 @@ Builder.load_string("""
                 size_hint: None, None
                 size: dp(200), dp(80)
                 pos: (self.parent.width - self.width) / 2, (self.parent.height - self.height) / 2
+
+        # Contraction counter
+        Label:
+            text: f"Contractions: {root.contraction_count}" if root.is_holding else ""
+            font_size: sp(16)
+            color: 0.9, 0.5, 0.2, 1
+            size_hint_y: None
+            height: dp(32)
+            opacity: 1 if root.is_holding else 0
 
         # Best time display
         BoxLayout:
@@ -118,6 +133,7 @@ class FreeScreen(Screen):
     elapsed_time = NumericProperty(0)
     best_time = NumericProperty(0)
     alltime_best = NumericProperty(0)
+    contraction_count = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -125,6 +141,8 @@ class FreeScreen(Screen):
         self.phase = "ready"  # ready, hold
         self._update_phase_color()
         self._load_alltime_best()
+        self.contractions = []
+        self.session_id = None
 
     def on_enter(self):
         """Called when screen is entered."""
@@ -134,6 +152,13 @@ class FreeScreen(Screen):
     def on_leave(self):
         """Called when leaving the screen."""
         self._stop_timer()
+
+    def on_touch_down(self, touch):
+        """Handle touch events - record contraction when tapping timer during hold."""
+        if self.is_holding and self.ids.chrono_area.collide_point(*touch.pos):
+            self.record_contraction()
+            return True
+        return super().on_touch_down(touch)
 
     def _reset_display(self):
         """Reset display without clearing best time."""
@@ -154,6 +179,9 @@ class FreeScreen(Screen):
         self.hold_count = 0
         self.best_time = 0
         self.best_time_text = "Session: --:--"
+        self.contractions = []
+        self.contraction_count = 0
+        self.session_id = None
         self._reset_display()
 
     def _load_alltime_best(self):
@@ -179,11 +207,21 @@ class FreeScreen(Screen):
         self.is_holding = True
         self.elapsed_time = 0
         self.hold_count += 1
+        self.contractions = []
+        self.contraction_count = 0
+        self.session_id = None
         self.phase_text = "Holding..."
-        self.instruction_text = "Stay relaxed - tap Stop when you need to breathe"
+        self.instruction_text = "Tap anywhere on the timer when you feel a contraction"
         self.button_text = "Stop"
         self._update_phase_color()
         self.timer_event = Clock.schedule_interval(self._update_timer, 0.1)
+
+    def record_contraction(self):
+        """Record a contraction during the current hold."""
+        if not self.is_holding:
+            return
+        self.contractions.append(self.elapsed_time)
+        self.contraction_count = len(self.contractions)
 
     def _end_hold(self):
         """End the current breath hold."""
@@ -195,7 +233,7 @@ class FreeScreen(Screen):
         is_new_alltime_best = self.elapsed_time > self.alltime_best
 
         # Save the practice session for this hold
-        save_practice_session(
+        self.session_id = save_practice_session(
             training_type="free",
             duration_seconds=self.elapsed_time,
             rounds_completed=1,
@@ -204,9 +242,14 @@ class FreeScreen(Screen):
                 "hold_time": self.elapsed_time,
                 "is_session_best": is_new_session_best,
                 "is_alltime_best": is_new_alltime_best,
+                "contraction_count": len(self.contractions),
             },
             completed=True,
         )
+
+        # Save contractions if any were recorded
+        for contraction_time in self.contractions:
+            save_contraction(self.session_id, contraction_time)
 
         # Check for new session best time
         if is_new_session_best:
@@ -225,7 +268,12 @@ class FreeScreen(Screen):
             self.instruction_text = "Great job! Take recovery breaths"
         else:
             self.phase_text = "Done"
-            self.instruction_text = "Good effort! Recover and try again"
+            contraction_summary = (
+                f" ({len(self.contractions)} contractions)" if self.contractions else ""
+            )
+            self.instruction_text = (
+                f"Good effort!{contraction_summary} Recover and try again"
+            )
 
         self.button_text = "Start Hold"
         self._update_phase_color()
