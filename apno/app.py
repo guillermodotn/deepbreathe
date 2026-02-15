@@ -28,6 +28,43 @@ class Apno(App):
     def build(self):
         # Set window background color (cool white - Ocean Blue theme)
         Window.clearcolor = (0.97, 0.98, 1.0, 1)
+        # Bind keyboard events for back button handling
+        Window.bind(on_keyboard=self._on_keyboard)
+
+    def _on_keyboard(self, window, key, scancode, codepoint, modifier):
+        """Handle Android/iOS back button and ESC key.
+
+        Returns True to consume the event (prevent app exit),
+        False to allow the event to propagate (exit app).
+        """
+        # Key 27 is Android back button, 41 is ESC on desktop
+        if key in (27, 41):
+            return self._handle_back_button()
+        return False
+
+    def _handle_back_button(self):
+        """Handle back button press - navigate back or exit."""
+        if not self.root:
+            return False
+
+        # Check if navigation drawer is open and close it
+        if hasattr(self.root.ids, "nav_drawer"):
+            nav_drawer = self.root.ids.nav_drawer
+            if hasattr(nav_drawer, "is_open") and nav_drawer.is_open:
+                nav_drawer.close()
+                return True
+
+        # Get current screen
+        screen_manager = self.root.ids.screen_manager
+        current_screen = screen_manager.current
+
+        # If not on home screen, go back to home
+        if current_screen != "home":
+            self.change_screen("home", "Apno")
+            return True
+
+        # On home screen - allow app to exit
+        return False
 
     def change_screen(self, screen_name, title):
         """Navigate to a different screen."""
