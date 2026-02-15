@@ -6,6 +6,7 @@ from datetime import datetime
 from kivy.graphics import Color, Mesh, RoundedRectangle
 from kivy.lang import Builder
 from kivy.properties import ListProperty, NumericProperty, StringProperty
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
@@ -260,7 +261,7 @@ class MonthGrid(BoxLayout):
             grid.add_widget(square)
 
 
-class MonthlyHeatmap(BoxLayout):
+class MonthlyHeatmap(ButtonBehavior, BoxLayout):
     """A GitHub-style monthly heatmap showing practice days for two months."""
 
     streak_text = StringProperty("")
@@ -269,6 +270,36 @@ class MonthlyHeatmap(BoxLayout):
         super().__init__(**kwargs)
         self.bind(pos=self._update_bg, size=self._update_bg)
         self._update_bg()
+
+    def on_press(self):
+        """Visual feedback when pressed."""
+        self._original_bg = [1, 1, 1, 1]
+        self._update_bg_pressed()
+
+    def on_release(self):
+        """Restore original appearance and navigate to history."""
+        self._update_bg()
+        # Navigate to history screen
+        if hasattr(self, "app") and self.app:
+            self.app.change_screen("history_screen", "Training History")
+        else:
+            # Try to get app from parent
+            from kivy.app import App
+
+            app = App.get_running_app()
+            if app:
+                app.change_screen("history_screen", "Training History")
+
+    def _update_bg_pressed(self, *args):
+        """Update background when pressed."""
+        self.canvas.before.clear()
+        with self.canvas.before:
+            # Shadow (slight offset)
+            Color(0, 0, 0, 0.08)
+            RoundedRectangle(pos=(self.x + 2, self.y - 2), size=self.size, radius=[12])
+            # Background (slightly darker)
+            Color(0.95, 0.95, 0.95, 1)
+            RoundedRectangle(pos=self.pos, size=self.size, radius=[12])
 
     def _update_bg(self, *args):
         self.canvas.before.clear()
