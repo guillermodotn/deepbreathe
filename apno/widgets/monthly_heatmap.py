@@ -1,7 +1,7 @@
 """Monthly practice heatmap widget."""
 
 from calendar import monthrange
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from kivy.graphics import Color, Mesh, RoundedRectangle
 from kivy.lang import Builder
@@ -333,16 +333,11 @@ class MonthlyHeatmap(ButtonBehavior, BoxLayout):
         # Get practice data for both months (62 days covers both)
         practice_data = get_training_types_by_date(days=62)
 
-        # Count practiced days across both months
-        practiced_days = 0
-        for date_str in practice_data:
-            if date_str:
-                if date_str.startswith(
-                    f"{curr_year}-{curr_month:02d}"
-                ) or date_str.startswith(f"{prev_year}-{prev_month:02d}"):
-                    practiced_days += 1
-
-        self.streak_text = f"{practiced_days} days"
+        # Calculate current streak (consecutive days with any practice)
+        streak = self._calculate_streak(practice_data)
+        self.streak_text = (
+            f"{streak} day streak" if streak == 1 else f"{streak} day streak"
+        )
 
         # Build both month grids
         self.ids.prev_month_grid.build_month(
@@ -351,3 +346,29 @@ class MonthlyHeatmap(ButtonBehavior, BoxLayout):
         self.ids.curr_month_grid.build_month(
             curr_year, curr_month, practice_data, curr_year, curr_month, today_day
         )
+
+    def _calculate_streak(self, practice_data: dict) -> int:
+        """Calculate the current streak of consecutive practice days.
+
+        Counts backwards from today, counting consecutive days with any practice.
+        The streak includes today if practiced, otherwise starts from last practice day.
+
+        Args:
+            practice_data: Dictionary mapping date strings to sets of training types
+
+        Returns:
+            Number of consecutive days with practice
+        """
+        today = datetime.now().date()
+        streak = 0
+        check_date = today
+
+        while True:
+            date_str = check_date.strftime("%Y-%m-%d")
+            if date_str in practice_data and practice_data[date_str]:
+                streak += 1
+                check_date = check_date - timedelta(days=1)
+            else:
+                break
+
+        return streak
