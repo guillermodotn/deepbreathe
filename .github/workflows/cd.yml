@@ -101,7 +101,7 @@ jobs:
             -v "${{ github.workspace }}:/app" \
             -v "$HOME/.buildozer:/home/user/.buildozer" \
             -e P4A_RELEASE_KEYSTORE=/app/release.keystore \
-            -e P4A_RELEASE_KEYALIAS={{ secrets.ANDROID_KEYSTORE_ALIAS }} \
+            -e P4A_RELEASE_KEYALIAS=${{ secrets.ANDROID_KEYSTORE_ALIAS }} \
             -e P4A_RELEASE_KEYSTORE_PASSWD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -e P4A_RELEASE_KEYALIAS_PASSWD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -e BUILDOZER_WARN_ON_ROOT=0 \
