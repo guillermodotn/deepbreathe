@@ -69,6 +69,13 @@ android.accept_sdk_license = True
 # Logcat filters (useful for debugging)
 android.logcat_filters = *:S python:D
 
+# Android keystore for signing release builds
+android.keystore = release.keystore
+android.keystorealias = apno
+
+# Version code (will be overridden in CI with GitHub run number)
+android.version.code = 100
+
 [buildozer]
 
 # Buildozer log level (0 = error, 1 = info, 2 = debug)

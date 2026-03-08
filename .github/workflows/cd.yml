@@ -1,22 +1,31 @@
 name: CD
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types:
-      - completed
-    branches:
-      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Release track"
+        required: true
+        default: "alpha"
+        type: choice
+        options:
+          - alpha
+          - beta
+          - production
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PACKAGE_NAME: ${{ secrets.PACKAGE_NAME || 'org.deepbreathe.apno' }}
+
 jobs:
   build-apk:
     name: Build Android APK
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
@@ -52,16 +61,22 @@ jobs:
         with:
           name: apno-android-apk
           path: bin/*.apk
-          retention-days: 30
+          retention-days: 7
 
   build-aab:
     name: Build Android AAB
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: play-console
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Decode keystore
+        run: |
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
+          fi
 
       - name: Cache Buildozer
         uses: actions/cache@v4
@@ -79,9 +94,12 @@ jobs:
           rm -rf ~/.buildozer/android/platform/python-for-android
 
       - name: Build AAB
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           docker run --rm \
             -e BUILDOZER_WARN_ON_ROOT=0 \
+            -e ANDROID_KEYSTORE_PASSWORD \
             -v "${{ github.workspace }}:/app:Z" \
             -v "$HOME/.buildozer:/home/user/.buildozer:Z" \
             -w /app \
@@ -93,4 +111,36 @@ jobs:
         with:
           name: apno-android-aab
           path: bin/*.aab
-          retention-days: 30
+          retention-days: 7
+
+  deploy-google-play:
+    name: Deploy to Google Play
+    needs: [build-aab]
+    runs-on: ubuntu-latest
+    environment: play-console
+
+    steps:
+      - name: Download AAB artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: apno-android-aab
+          path: bin
+
+      - name: Get track
+        id: track
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            TRACK="${{ github.event.inputs.track }}"
+          else
+            TRACK="alpha"
+          fi
+          echo "track=$TRACK" >> $GITHUB_OUTPUT
+
+      - name: Deploy to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_CREDENTIALS }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: bin/*.aab
+          track: ${{ steps.track.outputs.track }}
+          status: completed
