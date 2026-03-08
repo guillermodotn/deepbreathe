@@ -98,16 +98,16 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           docker run --rm \
+            -v "${{ github.workspace }}:/app" \
+            -v "$HOME/.buildozer:/home/user/.buildozer" \
+            -e P4A_RELEASE_KEYSTORE=/app/release.keystore \
+            -e P4A_RELEASE_KEYALIAS=apno \
+            -e P4A_RELEASE_KEYSTORE_PASSWD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+            -e P4A_RELEASE_KEYALIAS_PASSWD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
             -e BUILDOZER_WARN_ON_ROOT=0 \
-            -e ANDROID_KEYSTORE_PASSWORD \
-            -v "${{ github.workspace }}:/app:Z" \
-            -v "$HOME/.buildozer:/home/user/.buildozer:Z" \
             -w /app \
             kivy/buildozer:latest \
-            android release \
-            --private.key=release.keystore \
-            --private.key.alias=apno \
-            --private.key.pass=$ANDROID_KEYSTORE_PASSWORD
+            android release
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
