@@ -104,7 +104,10 @@ jobs:
             -v "$HOME/.buildozer:/home/user/.buildozer:Z" \
             -w /app \
             kivy/buildozer:latest \
-            android release
+            android release \
+            --private.key=release.keystore \
+            --private.key.alias=apno \
+            --private.key.pass=$ANDROID_KEYSTORE_PASSWORD
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
