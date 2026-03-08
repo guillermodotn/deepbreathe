@@ -7,7 +7,7 @@ title = Apno
 package.name = apno
 
 # Package domain (used with package.name to create the package identifier)
-package.domain = org.deepbreathe
+package.domain = io.github.guillermodotn
 
 # Source code directory
 source.dir = .

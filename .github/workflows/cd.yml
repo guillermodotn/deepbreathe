@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PACKAGE_NAME: ${{ secrets.PACKAGE_NAME || 'org.deepbreathe.apno' }}
+  PACKAGE_NAME: ${{ secrets.PACKAGE_NAME || 'io.github.guillermodotn.apno' }}
 
 jobs:
   build-apk:

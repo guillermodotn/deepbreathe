@@ -69,5 +69,5 @@ version_source = "tag"
 tag_format = "v{version}"
 
 [tool.apno.release]
-package_name = "org.deepbreathe.apno"
+package_name = "io.github.guillermodotn.apno"
 track = "alpha"
